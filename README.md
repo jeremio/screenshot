@@ -4,6 +4,8 @@ Un outil simple permettant de capturer automatiquement des captures d'écran de 
 
 ## Installation
 
+### Installation locale
+
 1. Clonez ce dépôt ou créez un nouveau projet
 2. Installez les dépendances
 
@@ -11,12 +13,31 @@ Un outil simple permettant de capturer automatiquement des captures d'écran de 
 pnpm install
 ```
 
+### Installation globale
+
+Pour utiliser l'outil partout dans votre système sans préfixe `pnpm` :
+
+```bash
+# Dans le répertoire du projet
+pnpm link --global
+```
+
+Après l'installation globale, vous pouvez utiliser la commande `screenshot` depuis n'importe quel répertoire :
+
+```bash
+screenshot https://example.com -f jpeg
+```
+
 ## Utilisation
 
 ### Commande de base
 
 ```bash
+# Version locale (dans le répertoire du projet)
 pnpm screenshot <url> [options]
+
+# Version globale (n'importe où dans le système)
+screenshot <url> [options]
 ```
 
 ### Options
@@ -36,6 +57,8 @@ pnpm screenshot <url> [options]
 
 ```bash
 pnpm screenshot https://example.com
+# ou globalement
+screenshot https://example.com
 ```
 *L'image sera enregistrée au format PNG dans le dossier `./screenshots/` avec une résolution de 1920x1080*
 
@@ -43,12 +66,16 @@ pnpm screenshot https://example.com
 
 ```bash
 pnpm screenshot localhost:3000
+# ou globalement
+screenshot localhost:3000
 ```
 
 3. **Enregistrer dans le répertoire courant**
 
 ```bash
 pnpm screenshot https://example.com -o .
+# ou globalement
+screenshot https://example.com -o .
 ```
 *L'image sera enregistrée directement dans le dossier d'où vous exécutez la commande*
 
@@ -56,6 +83,8 @@ pnpm screenshot https://example.com -o .
 
 ```bash
 pnpm screenshot https://example.com -f jpeg
+# ou globalement
+screenshot https://example.com -f jpeg
 ```
 *L'image sera enregistrée au format JPEG dans le dossier par défaut `./screenshots/`*
 
@@ -63,6 +92,8 @@ pnpm screenshot https://example.com -f jpeg
 
 ```bash
 pnpm screenshot https://example.com -fp false
+# ou globalement
+screenshot https://example.com -fp false
 ```
 *Capture uniquement ce qui est visible dans le viewport sans faire défiler la page*
 
@@ -70,6 +101,8 @@ pnpm screenshot https://example.com -fp false
 
 ```bash
 pnpm screenshot https://example.com -f jpeg -q 95
+# ou globalement
+screenshot https://example.com -f jpeg -q 95
 ```
 *L'image sera enregistrée au format JPEG avec une qualité de 95% dans le dossier par défaut*
 
@@ -77,6 +110,8 @@ pnpm screenshot https://example.com -f jpeg -q 95
 
 ```bash
 pnpm screenshot https://example.com -d 2000
+# ou globalement
+screenshot https://example.com -d 2000
 ```
 *L'outil attendra 2 secondes après le chargement de la page avant de prendre la capture*
 
@@ -84,6 +119,8 @@ pnpm screenshot https://example.com -d 2000
 
 ```bash
 pnpm screenshot https://example.com -w 375 -h 667
+# ou globalement
+screenshot https://example.com -w 375 -h 667
 ```
 *Capture d'écran simulant un appareil mobile (iPhone 8)*
 
@@ -91,6 +128,8 @@ pnpm screenshot https://example.com -w 375 -h 667
 
 ```bash
 pnpm screenshot https://example.com -w 768 -h 1024 -fp false
+# ou globalement
+screenshot https://example.com -w 768 -h 1024 -fp false
 ```
 *Capture d'écran simulant une tablette, uniquement ce qui est visible à l'écran*
 
@@ -98,6 +137,8 @@ pnpm screenshot https://example.com -w 768 -h 1024 -fp false
 
 ```bash
 pnpm screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -h 768
+# ou globalement
+screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -h 768
 ```
 *Capture au format WebP, qualité 90%, après un délai de 1,5 seconde, en résolution 1024x768, dans le dossier ./captures/*
 
@@ -105,12 +146,16 @@ pnpm screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 
 
 ```bash
 pnpm screenshot https://example.com -o /home/user/Documents/captures
+# ou globalement
+screenshot https://example.com -o /home/user/Documents/captures
 ```
 
 12. **Utiliser un chemin relatif complexe**
 
 ```bash
 pnpm screenshot https://example.com -o ../archives/captures
+# ou globalement
+screenshot https://example.com -o ../archives/captures
 ```
 *L'image sera enregistrée dans le dossier parent `../archives/captures/` relatif à l'endroit d'où vous exécutez la commande*
 
@@ -118,19 +163,29 @@ pnpm screenshot https://example.com -o ../archives/captures
 
 ```bash
 pnpm screenshot --help
+# ou globalement
+screenshot --help
+```
+
+## Désinstallation globale
+
+Pour supprimer la commande globale :
+
+```bash
+pnpm unlink --global
 ```
 
 ## Résolutions courantes
 
 | Appareil         | Largeur | Hauteur | Commande                                       |
 |------------------|---------|---------|------------------------------------------------|
-| Mobile (petit)   | 320     | 568     | `pnpm screenshot URL -w 320 -h 568`            |
-| Mobile (moyen)   | 375     | 667     | `pnpm screenshot URL -w 375 -h 667`            |
-| Mobile (grand)   | 414     | 896     | `pnpm screenshot URL -w 414 -h 896`            |
-| Tablette         | 768     | 1024    | `pnpm screenshot URL -w 768 -h 1024`           |
-| Laptop           | 1366    | 768     | `pnpm screenshot URL -w 1366 -h 768`           |
-| Desktop          | 1920    | 1080    | `pnpm screenshot URL -w 1920 -h 1080`          |
-| 4K               | 3840    | 2160    | `pnpm screenshot URL -w 3840 -h 2160`          |
+| Mobile (petit)   | 320     | 568     | `screenshot URL -w 320 -h 568`                 |
+| Mobile (moyen)   | 375     | 667     | `screenshot URL -w 375 -h 667`                 |
+| Mobile (grand)   | 414     | 896     | `screenshot URL -w 414 -h 896`                 |
+| Tablette         | 768     | 1024    | `screenshot URL -w 768 -h 1024`                |
+| Laptop           | 1366    | 768     | `screenshot URL -w 1366 -h 768`                |
+| Desktop          | 1920    | 1080    | `screenshot URL -w 1920 -h 1080`               |
+| 4K               | 3840    | 2160    | `screenshot URL -w 3840 -h 2160`               |
 
 ## Formats d'image supportés
 
@@ -190,6 +245,31 @@ Si vous rencontrez des erreurs, assurez-vous que:
 2. L'URL est valide et accessible
 3. Vous avez les droits d'écriture dans le dossier de destination
 4. Chrome ou Chromium est installé et accessible (le script essaie d'utiliser `/usr/bin/google-chrome` par défaut, vérifiez ce chemin si besoin)
+
+### Dépannage de l'installation globale
+
+Si la commande globale ne fonctionne pas :
+
+1. Vérifiez que le script a un shebang et est exécutable :
+   ```bash
+   # Ajouter le shebang
+   echo '#!/usr/bin/env node' | cat - src/main.js > temp && mv temp src/main.js
+   # Rendre exécutable
+   chmod +x src/main.js
+   ```
+
+2. Vérifiez votre configuration pnpm :
+   ```bash
+   # Configurer pnpm correctement
+   pnpm setup
+   source ~/.bashrc
+   ```
+
+3. Refaites le lien global :
+   ```bash
+   pnpm unlink --global
+   pnpm link --global
+   ```
 
 ## Configuration technique
 
