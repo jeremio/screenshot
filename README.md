@@ -42,7 +42,7 @@ screenshot <url> [options]
 
 ### Options
 
-- `--output`, `-o` : Dossier de destination (par défaut: `./screenshots/` relatif au répertoire d'exécution)
+- `--output`, `-o` : Dossier de destination (par défaut: répertoire courant d'où la commande est exécutée)
 - `--format`, `-f` : Format d'image - png, jpeg ou webp (par défaut: `png`)
 - `--delay`, `-d` : Délai en millisecondes avant la capture (par défaut: `0`)
 - `--quality`, `-q` : Qualité pour jpeg/webp de 1 à 100 (par défaut: `85`)
@@ -64,7 +64,7 @@ pnpm screenshot https://example.com
 # Version globale
 screenshot https://example.com
 ```
-*L'image sera enregistrée au format PNG dans le dossier `./screenshots/` avec une résolution de 1920x1080*
+*L'image sera enregistrée au format PNG directement dans le répertoire d'où vous exécutez la commande, avec une résolution de 1920x1080*
 
 2. **Capture d'écran d'une application locale**
 
@@ -78,18 +78,18 @@ pnpm screenshot localhost:3000
 screenshot localhost:3000
 ```
 
-3. **Enregistrer dans le répertoire courant**
+3. **Spécifier un dossier de destination personnalisé**
 
 ```bash
 # Version locale
-pnpm screenshot https://example.com -o .
+pnpm screenshot https://example.com -o ./captures
 ```
 
 ```bash
 # Version globale
-screenshot https://example.com -o .
+screenshot https://example.com -o ./captures
 ```
-*L'image sera enregistrée directement dans le dossier d'où vous exécutez la commande*
+*L'image sera enregistrée dans le dossier `./captures/` relatif à l'endroit d'où vous exécutez la commande*
 
 4. **Spécifier uniquement le format**
 
@@ -102,7 +102,7 @@ pnpm screenshot https://example.com -f jpeg
 # Version globale
 screenshot https://example.com -f jpeg
 ```
-*L'image sera enregistrée au format JPEG dans le dossier par défaut `./screenshots/`*
+*L'image sera enregistrée au format JPEG dans le répertoire courant*
 
 5. **Capture uniquement de la partie visible (sans défilement)**
 
@@ -128,7 +128,7 @@ pnpm screenshot https://example.com -f jpeg -q 95
 # Version globale
 screenshot https://example.com -f jpeg -q 95
 ```
-*L'image sera enregistrée au format JPEG avec une qualité de 95% dans le dossier par défaut*
+*L'image sera enregistrée au format JPEG avec une qualité de 95% dans le répertoire courant*
 
 7. **Ajouter un délai avant la capture**
 

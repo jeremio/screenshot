@@ -153,13 +153,10 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
   let screenshotsDir;
 
   if (!outputDir) {
-    // Pas de dossier spécifié : utiliser ./screenshots relatif au répertoire d'exécution
-    screenshotsDir = path.join(currentExecutionDir, 'screenshots');
-  } else if (outputDir === '.') {
-    // Point spécifié : utiliser directement le répertoire d'exécution actuel
+    // Pas de dossier spécifié : utiliser directement le répertoire d'exécution actuel (comportement par défaut)
     screenshotsDir = currentExecutionDir;
   } else {
-    // Autre dossier spécifié : résoudre le chemin par rapport au répertoire d'exécution
+    // Dossier spécifié : résoudre le chemin par rapport au répertoire d'exécution
     screenshotsDir = path.isAbsolute(outputDir) 
       ? outputDir 
       : path.join(currentExecutionDir, outputDir);
