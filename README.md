@@ -27,6 +27,7 @@ pnpm screenshot <url> [options]
 - `--quality`, `-q` : Qualité pour jpeg/webp de 1 à 100 (par défaut: `85`)
 - `--width`, `-w` : Largeur de la fenêtre en pixels (par défaut: `1920`)
 - `--height`, `-h` : Hauteur de la fenêtre en pixels (par défaut: `1080`)
+- `--full-page`, `-fp` : Capturer la page entière ou seulement la partie visible (par défaut: `true`)
 - `--help` : Afficher l'aide
 
 ### Exemples
@@ -58,55 +59,62 @@ pnpm screenshot https://example.com -f jpeg
 ```
 *L'image sera enregistrée au format JPEG dans le dossier par défaut `./screenshots/`*
 
-5. **Spécifier la qualité de l'image**
+5. **Capture uniquement de la partie visible (sans défilement)**
+
+```bash
+pnpm screenshot https://example.com -fp false
+```
+*Capture uniquement ce qui est visible dans le viewport sans faire défiler la page*
+
+6. **Spécifier la qualité de l'image**
 
 ```bash
 pnpm screenshot https://example.com -f jpeg -q 95
 ```
 *L'image sera enregistrée au format JPEG avec une qualité de 95% dans le dossier par défaut*
 
-6. **Ajouter un délai avant la capture**
+7. **Ajouter un délai avant la capture**
 
 ```bash
 pnpm screenshot https://example.com -d 2000
 ```
 *L'outil attendra 2 secondes après le chargement de la page avant de prendre la capture*
 
-7. **Capture en mode mobile**
+8. **Capture en mode mobile**
 
 ```bash
 pnpm screenshot https://example.com -w 375 -h 667
 ```
 *Capture d'écran simulant un appareil mobile (iPhone 8)*
 
-8. **Capture en mode tablette**
+9. **Capture en mode tablette sans défilement**
 
 ```bash
-pnpm screenshot https://example.com -w 768 -h 1024
+pnpm screenshot https://example.com -w 768 -h 1024 -fp false
 ```
-*Capture d'écran simulant une tablette*
+*Capture d'écran simulant une tablette, uniquement ce qui est visible à l'écran*
 
-9. **Combinaison de plusieurs options**
+10. **Combinaison de plusieurs options**
 
 ```bash
 pnpm screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -h 768
 ```
 *Capture au format WebP, qualité 90%, après un délai de 1,5 seconde, en résolution 1024x768, dans le dossier ./captures/*
 
-10. **Utiliser un chemin absolu pour la sortie**
+11. **Utiliser un chemin absolu pour la sortie**
 
 ```bash
 pnpm screenshot https://example.com -o /home/user/Documents/captures
 ```
 
-11. **Utiliser un chemin relatif complexe**
+12. **Utiliser un chemin relatif complexe**
 
 ```bash
 pnpm screenshot https://example.com -o ../archives/captures
 ```
 *L'image sera enregistrée dans le dossier parent `../archives/captures/` relatif à l'endroit d'où vous exécutez la commande*
 
-12. **Afficher l'aide**
+13. **Afficher l'aide**
 
 ```bash
 pnpm screenshot --help
@@ -131,6 +139,10 @@ pnpm screenshot --help
 - **WebP** : Excellent compromis entre qualité et taille de fichier
 
 ## Pourquoi utiliser les différentes options ?
+
+### Mode page entière vs viewport
+- **Page entière** (`--full-page true`) : Capture toute la page, même les parties non visibles sans défilement
+- **Viewport uniquement** (`--full-page false`) : Capture uniquement ce qui est visible dans la fenêtre du navigateur
 
 ### Délai avant capture
 Le délai peut être utile dans plusieurs cas :
@@ -168,6 +180,7 @@ domaine-exemple-com_1920x1080_2025-04-14T12-30-45.png
 - **Tests de responsive design** : Utilisez différentes largeurs pour vérifier les points de rupture de votre site
 - **Automation** : Créez un script bash pour capturer plusieurs résolutions en une seule commande
 - **Qualité vs taille** : Pour les formats JPEG/WebP, une qualité de 85% offre un bon équilibre
+- **Mode viewport** : Utilisez `-fp false` pour capturer uniquement ce qui est visible sans défilement, utile pour vérifier l'apparence "above the fold"
 
 ## Dépannage
 
@@ -185,6 +198,10 @@ Si vous rencontrez des erreurs, assurez-vous que:
 - Résolution par défaut: 1920x1080
 - Qualité JPEG/WebP par défaut: 85%
 - Mode headless (sans interface graphique)
+
+## Roadmap
+
+Consultez le fichier [ROADMAP.md](./ROADMAP.md) pour découvrir les fonctionnalités prévues pour les prochaines versions.
 
 ## Licence
 

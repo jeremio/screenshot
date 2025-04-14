@@ -16,7 +16,8 @@ const DEFAULT_CONFIG = {
   height: 1080,
   format: 'png',
   quality: 85,
-  delay: 0
+  delay: 0,
+  fullPage: true
 };
 
 // Fonction pour analyser les arguments de ligne de commande
@@ -29,6 +30,7 @@ function parseArgs() {
   let quality = DEFAULT_CONFIG.quality;
   let width = DEFAULT_CONFIG.width;
   let height = DEFAULT_CONFIG.height;
+  let fullPage = DEFAULT_CONFIG.fullPage;
 
   // Première valeur non-option est l'URL
   for (let i = 0; i < args.length; i++) {
@@ -64,6 +66,13 @@ function parseArgs() {
           console.error('Erreur: La hauteur doit être un nombre positif');
           process.exit(1);
         }
+      } else if (arg === '--full-page' || arg === '-fp') {
+        const value = args[++i];
+        if (value === 'false' || value === '0') {
+          fullPage = false;
+        } else {
+          fullPage = true;
+        }
       } else if (arg === '--help') {
         showHelp();
         process.exit(0);
@@ -78,7 +87,7 @@ function parseArgs() {
     }
   }
 
-  return { url, outputDir, format, delay, quality, width, height };
+  return { url, outputDir, format, delay, quality, width, height, fullPage };
 }
 
 // Afficher l'aide
@@ -93,12 +102,13 @@ Options:
   --quality, -q <1-100>  Qualité pour jpeg/webp (par défaut: 85)
   --width, -w <pixels>   Largeur de la fenêtre en pixels (par défaut: 1920)
   --height, -h <pixels>  Hauteur de la fenêtre en pixels (par défaut: 1080)
+  --full-page, -fp <bool> Capturer la page entière (par défaut: true)
   --help                 Afficher cette aide
 
 Exemples:
   pnpm screenshot https://example.com
   pnpm screenshot https://example.com -o ./captures
-  pnpm screenshot https://example.com -f jpeg -q 90
+  pnpm screenshot https://example.com -fp false -f jpeg -q 90
   pnpm screenshot https://example.com -d 2000 -w 375 -h 667 -f webp
   `);
 }
@@ -106,7 +116,8 @@ Exemples:
 // Fonction principale pour prendre une capture d'écran
 async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format, 
                              delay = DEFAULT_CONFIG.delay, quality = DEFAULT_CONFIG.quality,
-                             width = DEFAULT_CONFIG.width, height = DEFAULT_CONFIG.height) {
+                             width = DEFAULT_CONFIG.width, height = DEFAULT_CONFIG.height,
+                             fullPage = DEFAULT_CONFIG.fullPage) {
   // Vérifier si l'URL est valide
   if (!url) {
     console.error('Erreur: Veuillez fournir une URL valide');
@@ -130,8 +141,8 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
   }
 
   console.log(`Prise de capture d'écran de: ${url}`);
-  console.log(`Format: ${format}, Résolution: ${width}x${height}`);
-  
+  console.log(`Format: ${format}, Résolution: ${width}x${height}, Page entière: ${fullPage ? 'Oui' : 'Non'}`);
+    
   if (delay > 0) {
     console.log(`Délai avant capture: ${delay}ms`);
   }
@@ -203,7 +214,7 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
     // Options pour la capture d'écran
     const screenshotOptions = { 
       path: filePath,
-      fullPage: true,
+      fullPage: fullPage,
       type: format
     };
     
@@ -228,7 +239,7 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
 }
 
 // Analyser les arguments et exécuter
-const { url, outputDir, format, delay, quality, width, height } = parseArgs();
+const { url, outputDir, format, delay, quality, width, height, fullPage } = parseArgs();
 
 // Si pas d'URL et pas --help, afficher l'aide
 if (!url) {
@@ -238,4 +249,4 @@ if (!url) {
 }
 
 // Exécuter la fonction
-takeScreenshot(url, outputDir, format, delay, quality, width, height);
+takeScreenshot(url, outputDir, format, delay, quality, width, height, fullPage);
