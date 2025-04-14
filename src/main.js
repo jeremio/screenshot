@@ -51,10 +51,10 @@ async function takeScreenshot(url, outputDir) {
   const filePath = path.join(screenshotsDir, filename);
 
   try {
-    // Lancer le navigateur
     const browser = await puppeteer.launch({
-      headless: 'new', // Utilise le nouveau mode headless pour Puppeteer
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: '/usr/bin/google-chrome'
     });
     
     // Ouvrir une nouvelle page
@@ -63,8 +63,21 @@ async function takeScreenshot(url, outputDir) {
     // Définir une taille d'écran standard
     await page.setViewport({ width: 1920, height: 1080 });
     
-    // Aller à l'URL et attendre que la page soit chargée
-    await page.goto(url, { waitUntil: 'networkidle2' });
+    // Ajouter un log pour voir le chargement
+    console.log(`Navigation vers: ${url}`);
+    
+    // Aller à l'URL et attendre que la page soit chargée avec un timeout pnpm screenshot https://www.google.fraugmenté
+    try {
+      await page.goto(url, { 
+        waitUntil: 'networkidle2', 
+        timeout: 60000 // Augmenter le timeout de navigation à 60 secondes
+      });
+      console.log('Page chargée avec succès');
+    } catch (error) {
+      console.error(`Erreur lors du chargement de la page: ${error.message}`);
+      await browser.close();
+      process.exit(1);
+    }
     
     // Prendre la capture d'écran
     await page.screenshot({ path: filePath, fullPage: true });
