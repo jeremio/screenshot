@@ -16,17 +16,21 @@ pnpm install
 ### Commande de base
 
 ```bash
-pnpm screenshot <url> [dossier-sortie]
+pnpm screenshot <url> [dossier-sortie] [format]
 ```
+
+- **url**: L'URL du site à capturer (obligatoire)
+- **dossier-sortie**: Le dossier où enregistrer l'image (optionnel, par défaut: `./screenshots/`)
+- **format**: Format de l'image - png, jpeg ou webp (optionnel, par défaut: `png`)
 
 ### Exemples
 
-1. **Capture d'écran d'un site web avec dossier par défaut**
+1. **Capture d'écran d'un site web avec paramètres par défaut**
 
 ```bash
 pnpm screenshot https://example.com
 ```
-*L'image sera enregistrée dans le dossier `./screenshots/` relatif à l'endroit d'où vous exécutez la commande*
+*L'image sera enregistrée au format PNG dans le dossier `./screenshots/` relatif à l'endroit d'où vous exécutez la commande*
 
 2. **Capture d'écran d'une application locale**
 
@@ -41,25 +45,46 @@ pnpm screenshot https://example.com .
 ```
 *L'image sera enregistrée directement dans le dossier d'où vous exécutez la commande*
 
-4. **Spécifier un dossier personnalisé**
+4. **Spécifier un format d'image**
 
 ```bash
-pnpm screenshot https://example.com ./captures
+pnpm screenshot https://example.com . jpeg
 ```
-*L'image sera enregistrée dans le dossier `./captures/` relatif à l'endroit d'où vous exécutez la commande*
+*L'image sera enregistrée au format JPEG dans le dossier courant*
 
-5. **Utiliser un chemin absolu pour la sortie**
+5. **Spécifier un dossier personnalisé et un format**
+
+```bash
+pnpm screenshot https://example.com ./captures webp
+```
+*L'image sera enregistrée au format WebP dans le dossier `./captures/` relatif à l'endroit d'où vous exécutez la commande*
+
+6. **Utiliser un chemin absolu pour la sortie**
 
 ```bash
 pnpm screenshot https://example.com /Users/votrenom/Documents/captures
 ```
 
-6. **Utiliser un chemin relatif complexe**
+7. **Utiliser un chemin relatif complexe**
 
 ```bash
 pnpm screenshot https://example.com ../archives/captures
 ```
 *L'image sera enregistrée dans le dossier parent `../archives/captures/` relatif à l'endroit d'où vous exécutez la commande*
+
+## Formats d'image supportés
+
+- **PNG** (par défaut) : Qualité optimale sans perte, parfait pour les captures d'écran d'interfaces
+- **JPEG** : Fichiers plus légers, idéal quand la taille est prioritaire
+- **WebP** : Excellent compromis entre qualité et taille de fichier
+
+## Configuration technique
+
+- Node.js avec modules ES
+- Puppeteer pour l'automatisation du navigateur Chrome
+- Résolution par défaut: 1920x1080
+- Qualité JPEG/WebP: 85%
+- Mode headless (sans interface graphique)
 
 ## Caractéristiques
 
