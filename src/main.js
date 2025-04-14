@@ -68,7 +68,7 @@ function parseArgs() {
         }
       } else if (arg === '--full-page' || arg === '-fp') {
         const value = args[++i];
-        if (value === 'false' || value === '0') {
+        if (value && (value.toLowerCase() === 'false' || value === '0')) {
           fullPage = false;
         } else {
           fullPage = true;
@@ -96,14 +96,14 @@ function showHelp() {
 Usage: pnpm screenshot <url> [options]
 
 Options:
-  --output, -o <dir>     Dossier de destination (par défaut: ./screenshots)
-  --format, -f <format>  Format d'image: png, jpeg, webp (par défaut: png)
-  --delay, -d <ms>       Délai en millisecondes avant la capture (par défaut: 0)
-  --quality, -q <1-100>  Qualité pour jpeg/webp (par défaut: 85)
-  --width, -w <pixels>   Largeur de la fenêtre en pixels (par défaut: 1920)
-  --height, -h <pixels>  Hauteur de la fenêtre en pixels (par défaut: 1080)
+  --output, -o <dir>      Dossier de destination (par défaut: ./screenshots)
+  --format, -f <format>   Format d'image: png, jpeg, webp (par défaut: png)
+  --delay, -d <ms>        Délai en millisecondes avant la capture (par défaut: 0)
+  --quality, -q <1-100>   Qualité pour jpeg/webp (par défaut: 85)
+  --width, -w <pixels>    Largeur de la fenêtre en pixels (par défaut: 1920)
+  --height, -h <pixels>   Hauteur de la fenêtre en pixels (par défaut: 1080)
   --full-page, -fp <bool> Capturer la page entière (par défaut: true)
-  --help                 Afficher cette aide
+  --help                  Afficher cette aide
 
 Exemples:
   pnpm screenshot https://example.com
@@ -142,7 +142,7 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
 
   console.log(`Prise de capture d'écran de: ${url}`);
   console.log(`Format: ${format}, Résolution: ${width}x${height}, Page entière: ${fullPage ? 'Oui' : 'Non'}`);
-    
+  
   if (delay > 0) {
     console.log(`Délai avant capture: ${delay}ms`);
   }
