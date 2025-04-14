@@ -56,8 +56,12 @@ screenshot <url> [options]
 1. **Capture d'écran avec paramètres par défaut**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com
 ```
 *L'image sera enregistrée au format PNG dans le dossier `./screenshots/` avec une résolution de 1920x1080*
@@ -65,16 +69,24 @@ screenshot https://example.com
 2. **Capture d'écran d'une application locale**
 
 ```bash
+# Version locale
 pnpm screenshot localhost:3000
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot localhost:3000
 ```
 
 3. **Enregistrer dans le répertoire courant**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -o .
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -o .
 ```
 *L'image sera enregistrée directement dans le dossier d'où vous exécutez la commande*
@@ -82,8 +94,12 @@ screenshot https://example.com -o .
 4. **Spécifier uniquement le format**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -f jpeg
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -f jpeg
 ```
 *L'image sera enregistrée au format JPEG dans le dossier par défaut `./screenshots/`*
@@ -91,8 +107,12 @@ screenshot https://example.com -f jpeg
 5. **Capture uniquement de la partie visible (sans défilement)**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -fp false
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -fp false
 ```
 *Capture uniquement ce qui est visible dans le viewport sans faire défiler la page*
@@ -100,8 +120,12 @@ screenshot https://example.com -fp false
 6. **Spécifier la qualité de l'image**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -f jpeg -q 95
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -f jpeg -q 95
 ```
 *L'image sera enregistrée au format JPEG avec une qualité de 95% dans le dossier par défaut*
@@ -109,8 +133,12 @@ screenshot https://example.com -f jpeg -q 95
 7. **Ajouter un délai avant la capture**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -d 2000
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -d 2000
 ```
 *L'outil attendra 2 secondes après le chargement de la page avant de prendre la capture*
@@ -118,8 +146,12 @@ screenshot https://example.com -d 2000
 8. **Capture en mode mobile**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -w 375 -h 667
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -w 375 -h 667
 ```
 *Capture d'écran simulant un appareil mobile (iPhone 8)*
@@ -127,8 +159,12 @@ screenshot https://example.com -w 375 -h 667
 9. **Capture en mode tablette sans défilement**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -w 768 -h 1024 -fp false
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -w 768 -h 1024 -fp false
 ```
 *Capture d'écran simulant une tablette, uniquement ce qui est visible à l'écran*
@@ -136,8 +172,12 @@ screenshot https://example.com -w 768 -h 1024 -fp false
 10. **Combinaison de plusieurs options**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -h 768
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -h 768
 ```
 *Capture au format WebP, qualité 90%, après un délai de 1,5 seconde, en résolution 1024x768, dans le dossier ./captures/*
@@ -145,16 +185,24 @@ screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -h 76
 11. **Utiliser un chemin absolu pour la sortie**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -o /home/user/Documents/captures
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -o /home/user/Documents/captures
 ```
 
 12. **Utiliser un chemin relatif complexe**
 
 ```bash
+# Version locale
 pnpm screenshot https://example.com -o ../archives/captures
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot https://example.com -o ../archives/captures
 ```
 *L'image sera enregistrée dans le dossier parent `../archives/captures/` relatif à l'endroit d'où vous exécutez la commande*
@@ -162,8 +210,12 @@ screenshot https://example.com -o ../archives/captures
 13. **Afficher l'aide**
 
 ```bash
+# Version locale
 pnpm screenshot --help
-# ou globalement
+```
+
+```bash
+# Version globale
 screenshot --help
 ```
 
@@ -254,6 +306,7 @@ Si la commande globale ne fonctionne pas :
    ```bash
    # Ajouter le shebang
    echo '#!/usr/bin/env node' | cat - src/main.js > temp && mv temp src/main.js
+   
    # Rendre exécutable
    chmod +x src/main.js
    ```
@@ -262,12 +315,17 @@ Si la commande globale ne fonctionne pas :
    ```bash
    # Configurer pnpm correctement
    pnpm setup
+   
+   # Recharger votre fichier de configuration shell
    source ~/.bashrc
    ```
 
 3. Refaites le lien global :
    ```bash
+   # Supprimer l'ancien lien
    pnpm unlink --global
+   
+   # Recréer le lien
    pnpm link --global
    ```
 
