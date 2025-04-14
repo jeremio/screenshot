@@ -21,7 +21,7 @@ pnpm screenshot <url> [options]
 
 ### Options
 
-- `--output`, `-o` : Dossier de destination (par défaut: `./screenshots/`)
+- `--output`, `-o` : Dossier de destination (par défaut: `./screenshots/` relatif au répertoire d'exécution)
 - `--format`, `-f` : Format d'image - png, jpeg ou webp (par défaut: `png`)
 - `--delay`, `-d` : Délai en millisecondes avant la capture (par défaut: `0`)
 - `--quality`, `-q` : Qualité pour jpeg/webp de 1 à 100 (par défaut: `85`)
@@ -186,10 +186,10 @@ domaine-exemple-com_1920x1080_2025-04-14T12-30-45.png
 
 Si vous rencontrez des erreurs, assurez-vous que:
 
-1. Puppeteer est correctement installé
+1. Puppeteer est correctement installé (via `pnpm install`)
 2. L'URL est valide et accessible
 3. Vous avez les droits d'écriture dans le dossier de destination
-4. Chrome ou Chromium est installé et accessible
+4. Chrome ou Chromium est installé et accessible (le script essaie d'utiliser `/usr/bin/google-chrome` par défaut, vérifiez ce chemin si besoin)
 
 ## Configuration technique
 
