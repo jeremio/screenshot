@@ -1,5 +1,5 @@
 // Traitement des arguments avec options nommées
-// Format: pnpm screenshot <url> [--output|-o <dir>] [--format|-f <format>]
+// Format: pnpm screenshot <url> [options]
 
 import puppeteer from 'puppeteer';
 import path from 'path';
@@ -10,12 +10,25 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Configuration par défaut
+const DEFAULT_CONFIG = {
+  width: 1920,
+  height: 1080,
+  format: 'png',
+  quality: 85,
+  delay: 0
+};
+
 // Fonction pour analyser les arguments de ligne de commande
 function parseArgs() {
   const args = process.argv.slice(2);
   let url = '';
   let outputDir = null;
-  let format = 'png';
+  let format = DEFAULT_CONFIG.format;
+  let delay = DEFAULT_CONFIG.delay;
+  let quality = DEFAULT_CONFIG.quality;
+  let width = DEFAULT_CONFIG.width;
+  let height = DEFAULT_CONFIG.height;
 
   // Première valeur non-option est l'URL
   for (let i = 0; i < args.length; i++) {
@@ -27,9 +40,37 @@ function parseArgs() {
         outputDir = args[++i]; // Prendre la valeur suivante
       } else if (arg === '--format' || arg === '-f') {
         format = args[++i]; // Prendre la valeur suivante
-      } else if (arg === '--help' || arg === '-h') {
+      } else if (arg === '--delay' || arg === '-d') {
+        delay = parseInt(args[++i], 10); // Convertir en nombre
+        if (isNaN(delay) || delay < 0) {
+          console.error('Erreur: Le délai doit être un nombre positif en millisecondes');
+          process.exit(1);
+        }
+      } else if (arg === '--quality' || arg === '-q') {
+        quality = parseInt(args[++i], 10); // Convertir en nombre
+        if (isNaN(quality) || quality < 1 || quality > 100) {
+          console.error('Erreur: La qualité doit être un nombre entre 1 et 100');
+          process.exit(1);
+        }
+      } else if (arg === '--width' || arg === '-w') {
+        width = parseInt(args[++i], 10); // Convertir en nombre
+        if (isNaN(width) || width <= 0) {
+          console.error('Erreur: La largeur doit être un nombre positif');
+          process.exit(1);
+        }
+      } else if (arg === '--height' || arg === '-h') {
+        height = parseInt(args[++i], 10); // Convertir en nombre
+        if (isNaN(height) || height <= 0) {
+          console.error('Erreur: La hauteur doit être un nombre positif');
+          process.exit(1);
+        }
+      } else if (arg === '--help') {
         showHelp();
         process.exit(0);
+      } else {
+        console.error(`Option non reconnue: ${arg}`);
+        showHelp();
+        process.exit(1);
       }
     } else if (!url) {
       // Premier argument non-option est l'URL
@@ -37,7 +78,7 @@ function parseArgs() {
     }
   }
 
-  return { url, outputDir, format };
+  return { url, outputDir, format, delay, quality, width, height };
 }
 
 // Afficher l'aide
@@ -46,20 +87,26 @@ function showHelp() {
 Usage: pnpm screenshot <url> [options]
 
 Options:
-  --output, -o <dir>    Dossier de destination (par défaut: ./screenshots)
-  --format, -f <format> Format d'image: png, jpeg, webp (par défaut: png)
-  --help, -h            Afficher cette aide
+  --output, -o <dir>     Dossier de destination (par défaut: ./screenshots)
+  --format, -f <format>  Format d'image: png, jpeg, webp (par défaut: png)
+  --delay, -d <ms>       Délai en millisecondes avant la capture (par défaut: 0)
+  --quality, -q <1-100>  Qualité pour jpeg/webp (par défaut: 85)
+  --width, -w <pixels>   Largeur de la fenêtre en pixels (par défaut: 1920)
+  --height, -h <pixels>  Hauteur de la fenêtre en pixels (par défaut: 1080)
+  --help                 Afficher cette aide
 
 Exemples:
   pnpm screenshot https://example.com
   pnpm screenshot https://example.com -o ./captures
-  pnpm screenshot https://example.com -f jpeg
-  pnpm screenshot https://example.com -o . -f webp
+  pnpm screenshot https://example.com -f jpeg -q 90
+  pnpm screenshot https://example.com -d 2000 -w 375 -h 667 -f webp
   `);
 }
 
 // Fonction principale pour prendre une capture d'écran
-async function takeScreenshot(url, outputDir, format = 'png') {
+async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format, 
+                             delay = DEFAULT_CONFIG.delay, quality = DEFAULT_CONFIG.quality,
+                             width = DEFAULT_CONFIG.width, height = DEFAULT_CONFIG.height) {
   // Vérifier si l'URL est valide
   if (!url) {
     console.error('Erreur: Veuillez fournir une URL valide');
@@ -82,7 +129,12 @@ async function takeScreenshot(url, outputDir, format = 'png') {
     url = 'http://' + url;
   }
 
-  console.log(`Prise de capture d'écran de: ${url} (format: ${format})`);
+  console.log(`Prise de capture d'écran de: ${url}`);
+  console.log(`Format: ${format}, Résolution: ${width}x${height}`);
+  
+  if (delay > 0) {
+    console.log(`Délai avant capture: ${delay}ms`);
+  }
 
   // Déterminer le dossier de destination - tout est relatif au répertoire d'exécution
   const currentExecutionDir = process.cwd();
@@ -101,7 +153,6 @@ async function takeScreenshot(url, outputDir, format = 'png') {
       : path.join(currentExecutionDir, outputDir);
   }
 
-  console.log(`Répertoire d'exécution: ${currentExecutionDir}`);
   console.log(`Dossier de destination: ${screenshotsDir}`);
 
   // Créer le dossier de destination s'il n'existe pas
@@ -122,8 +173,8 @@ async function takeScreenshot(url, outputDir, format = 'png') {
     .replace(/-+/g, '-')
     .substring(0, 30);
   
-  // Ajouter l'extension de fichier correspondant au format
-  const filename = `${urlForFilename}_${timestamp}.${format}`;
+  // Ajouter des informations sur la résolution au nom du fichier
+  const filename = `${urlForFilename}_${width}x${height}_${timestamp}.${format}`;
   const filePath = path.join(screenshotsDir, filename);
 
   try {
@@ -137,11 +188,17 @@ async function takeScreenshot(url, outputDir, format = 'png') {
     // Ouvrir une nouvelle page
     const page = await browser.newPage();
     
-    // Définir une taille d'écran standard
-    await page.setViewport({ width: 1920, height: 1080 });
+    // Définir la taille d'écran spécifiée
+    await page.setViewport({ width, height });
     
     // Aller à l'URL et attendre que la page soit chargée
     await page.goto(url, { waitUntil: 'networkidle2' });
+    
+    // Attendre le délai spécifié si nécessaire
+    if (delay > 0) {
+      console.log(`Attente de ${delay}ms avant capture...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
     
     // Options pour la capture d'écran
     const screenshotOptions = { 
@@ -152,7 +209,8 @@ async function takeScreenshot(url, outputDir, format = 'png') {
     
     // Ajouter la qualité pour jpeg et webp
     if (format === 'jpeg' || format === 'webp') {
-      screenshotOptions.quality = 85; // 85% est un bon compromis entre qualité et taille
+      screenshotOptions.quality = quality;
+      console.log(`Qualité d'image: ${quality}%`);
     }
     
     // Prendre la capture d'écran
@@ -170,7 +228,7 @@ async function takeScreenshot(url, outputDir, format = 'png') {
 }
 
 // Analyser les arguments et exécuter
-const { url, outputDir, format } = parseArgs();
+const { url, outputDir, format, delay, quality, width, height } = parseArgs();
 
 // Si pas d'URL et pas --help, afficher l'aide
 if (!url) {
@@ -180,4 +238,4 @@ if (!url) {
 }
 
 // Exécuter la fonction
-takeScreenshot(url, outputDir, format);
+takeScreenshot(url, outputDir, format, delay, quality, width, height);
