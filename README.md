@@ -26,7 +26,7 @@ pnpm screenshot <url> [dossier-sortie]
 ```bash
 pnpm screenshot https://example.com
 ```
-*L'image sera enregistrée dans le dossier `./screenshots/` à la racine du projet*
+*L'image sera enregistrée dans le dossier `./screenshots/` relatif à l'endroit d'où vous exécutez la commande*
 
 2. **Capture d'écran d'une application locale**
 
@@ -34,23 +34,32 @@ pnpm screenshot https://example.com
 pnpm screenshot localhost:3000
 ```
 
-3. **Spécifier un dossier personnalisé**
+3. **Enregistrer dans le répertoire courant**
+
+```bash
+pnpm screenshot https://example.com .
+```
+*L'image sera enregistrée directement dans le dossier d'où vous exécutez la commande*
+
+4. **Spécifier un dossier personnalisé**
 
 ```bash
 pnpm screenshot https://example.com ./captures
 ```
+*L'image sera enregistrée dans le dossier `./captures/` relatif à l'endroit d'où vous exécutez la commande*
 
-4. **Utiliser un chemin absolu pour la sortie**
+5. **Utiliser un chemin absolu pour la sortie**
 
 ```bash
 pnpm screenshot https://example.com /Users/votrenom/Documents/captures
 ```
 
-5. **Utiliser un chemin relatif complexe**
+6. **Utiliser un chemin relatif complexe**
 
 ```bash
 pnpm screenshot https://example.com ../archives/captures
 ```
+*L'image sera enregistrée dans le dossier parent `../archives/captures/` relatif à l'endroit d'où vous exécutez la commande*
 
 ## Caractéristiques
 

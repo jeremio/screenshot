@@ -24,10 +24,25 @@ async function takeScreenshot(url, outputDir) {
 
   console.log(`Prise de capture d'écran de: ${url}`);
 
-  // Utiliser le dossier personnalisé ou le dossier par défaut 'screenshots'
-  const screenshotsDir = outputDir 
-    ? path.resolve(outputDir) 
-    : path.join(process.cwd(), 'screenshots');
+  // Déterminer le dossier de destination - tout est relatif au répertoire d'exécution
+  const currentExecutionDir = process.cwd();
+  let screenshotsDir;
+
+  if (!outputDir) {
+    // Pas de dossier spécifié : utiliser ./screenshots relatif au répertoire d'exécution
+    screenshotsDir = path.join(currentExecutionDir, 'screenshots');
+  } else if (outputDir === '.') {
+    // Point spécifié : utiliser directement le répertoire d'exécution actuel
+    screenshotsDir = currentExecutionDir;
+  } else {
+    // Autre dossier spécifié : résoudre le chemin par rapport au répertoire d'exécution
+    screenshotsDir = path.isAbsolute(outputDir) 
+      ? outputDir 
+      : path.join(currentExecutionDir, outputDir);
+  }
+
+  console.log(`Répertoire d'exécution: ${currentExecutionDir}`);
+  console.log(`Dossier de destination: ${screenshotsDir}`);
   
   // Créer le dossier de destination s'il n'existe pas
   if (!fs.existsSync(screenshotsDir)) {
