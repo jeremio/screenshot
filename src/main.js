@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // Traitement des arguments avec options nommées
 // Format: pnpm screenshot <url> [options]
 

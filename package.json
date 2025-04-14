@@ -1,8 +1,11 @@
 {
   "name": "screenshot",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "bin": {
+    "screenshot": "./src/main.js"
+  },
   "scripts": {
     "screenshot": "node src/main.js"
   },
