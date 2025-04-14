@@ -16,61 +16,62 @@ pnpm install
 ### Commande de base
 
 ```bash
-pnpm screenshot <url> [dossier-sortie] [format]
+pnpm screenshot <url> [options]
 ```
 
-- **url**: L'URL du site à capturer (obligatoire)
-- **dossier-sortie**: Le dossier où enregistrer l'image (optionnel, par défaut: `./screenshots/`)
-- **format**: Format de l'image - png, jpeg ou webp (optionnel, par défaut: `png`)
+### Options
+
+- `--output`, `-o` : Dossier de destination (par défaut: `./screenshots/`)
+- `--format`, `-f` : Format d'image - png, jpeg ou webp (par défaut: `png`)
+- `--help`, `-h` : Afficher l'aide
 
 ### Exemples
 
-1. **Capture d'écran d'un site web avec paramètres par défaut**
+1. **Capture d'écran avec paramètres par défaut**
 
 ```bash
 pnpm screenshot https://example.com
 ```
-*L'image sera enregistrée au format PNG dans le dossier `./screenshots/` relatif à l'endroit d'où vous exécutez la commande*
+*L'image sera enregistrée au format PNG dans le dossier `./screenshots/`*
 
-2. **Capture d'écran d'une application locale**
-
-```bash
-pnpm screenshot localhost:3000
-```
-
-3. **Enregistrer dans le répertoire courant**
+2. **Spécifier uniquement le format**
 
 ```bash
-pnpm screenshot https://example.com .
+pnpm screenshot https://example.com --format jpeg
+# ou avec la forme courte
+pnpm screenshot https://example.com -f jpeg
 ```
-*L'image sera enregistrée directement dans le dossier d'où vous exécutez la commande*
+*L'image sera enregistrée au format JPEG dans le dossier par défaut `./screenshots/`*
 
-4. **Spécifier un format d'image**
+3. **Spécifier uniquement le dossier de sortie**
 
 ```bash
-pnpm screenshot https://example.com . jpeg
+pnpm screenshot https://example.com --output ./captures
+# ou avec la forme courte
+pnpm screenshot https://example.com -o ./captures
 ```
-*L'image sera enregistrée au format JPEG dans le dossier courant*
+*L'image sera enregistrée au format PNG dans le dossier `./captures/`*
 
-5. **Spécifier un dossier personnalisé et un format**
+4. **Spécifier le format et le dossier**
 
 ```bash
-pnpm screenshot https://example.com ./captures webp
+pnpm screenshot https://example.com -o . -f webp
 ```
-*L'image sera enregistrée au format WebP dans le dossier `./captures/` relatif à l'endroit d'où vous exécutez la commande*
+*L'image sera enregistrée au format WebP dans le répertoire courant*
 
-6. **Utiliser un chemin absolu pour la sortie**
+5. **Utiliser un chemin absolu pour la sortie**
 
 ```bash
-pnpm screenshot https://example.com /Users/votrenom/Documents/captures
+pnpm screenshot https://example.com -o /Users/votrenom/Documents/captures
 ```
 
-7. **Utiliser un chemin relatif complexe**
+6. **Afficher l'aide**
 
 ```bash
-pnpm screenshot https://example.com ../archives/captures
+pnpm screenshot --help
+# ou
+pnpm screenshot -h
 ```
-*L'image sera enregistrée dans le dossier parent `../archives/captures/` relatif à l'endroit d'où vous exécutez la commande*
 
 ## Formats d'image supportés
 
@@ -85,37 +86,3 @@ pnpm screenshot https://example.com ../archives/captures
 - Résolution par défaut: 1920x1080
 - Qualité JPEG/WebP: 85%
 - Mode headless (sans interface graphique)
-
-## Caractéristiques
-
-- **Format ESM** - Utilise la syntaxe moderne des modules ES
-- **Nommage automatique** - Les fichiers sont nommés avec l'URL et le timestamp (date et heure)
-- **Capture en pleine page** - Capture l'intégralité de la page, pas seulement la partie visible
-- **Résolution HD** - Captures en 1920x1080 par défaut
-- **Création automatique de dossiers** - Crée les dossiers de destination s'ils n'existent pas
-
-## Structure de fichiers
-
-Le nom des fichiers générés suit le modèle suivant:
-```
-domaine-exemple-com_2025-04-14T12-30-45.png
-```
-
-## Configuration technique
-
-- Node.js avec modules ES
-- Puppeteer pour l'automatisation du navigateur Chrome
-- Résolution par défaut: 1920x1080
-- Mode headless (sans interface graphique)
-
-## Dépannage
-
-Si vous rencontrez des erreurs, assurez-vous que:
-
-1. Puppeteer est correctement installé
-2. L'URL est valide et accessible
-3. Vous avez les droits d'écriture dans le dossier de destination
-
-## Licence
-
-MIT

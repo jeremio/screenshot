@@ -1,10 +1,69 @@
-// Modifier la fonction takeScreenshot pour accepter un paramètre de format
+// Traitement des arguments avec options nommées
+// Format: pnpm screenshot <url> [--output|-o <dir>] [--format|-f <format>]
+
+import puppeteer from 'puppeteer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// Obtenir le répertoire courant en ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Fonction pour analyser les arguments de ligne de commande
+function parseArgs() {
+  const args = process.argv.slice(2);
+  let url = '';
+  let outputDir = null;
+  let format = 'png';
+
+  // Première valeur non-option est l'URL
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    
+    if (arg.startsWith('--') || arg.startsWith('-')) {
+      // C'est une option, la traiter avec sa valeur
+      if (arg === '--output' || arg === '-o') {
+        outputDir = args[++i]; // Prendre la valeur suivante
+      } else if (arg === '--format' || arg === '-f') {
+        format = args[++i]; // Prendre la valeur suivante
+      } else if (arg === '--help' || arg === '-h') {
+        showHelp();
+        process.exit(0);
+      }
+    } else if (!url) {
+      // Premier argument non-option est l'URL
+      url = arg;
+    }
+  }
+
+  return { url, outputDir, format };
+}
+
+// Afficher l'aide
+function showHelp() {
+  console.log(`
+Usage: pnpm screenshot <url> [options]
+
+Options:
+  --output, -o <dir>    Dossier de destination (par défaut: ./screenshots)
+  --format, -f <format> Format d'image: png, jpeg, webp (par défaut: png)
+  --help, -h            Afficher cette aide
+
+Exemples:
+  pnpm screenshot https://example.com
+  pnpm screenshot https://example.com -o ./captures
+  pnpm screenshot https://example.com -f jpeg
+  pnpm screenshot https://example.com -o . -f webp
+  `);
+}
+
+// Fonction principale pour prendre une capture d'écran
 async function takeScreenshot(url, outputDir, format = 'png') {
   // Vérifier si l'URL est valide
   if (!url) {
     console.error('Erreur: Veuillez fournir une URL valide');
-    console.log('Usage: pnpm screenshot <url> [outputDir] [format]');
-    console.log('Formats supportés: png, jpeg, webp');
+    showHelp();
     process.exit(1);
   }
 
@@ -110,10 +169,15 @@ async function takeScreenshot(url, outputDir, format = 'png') {
   }
 }
 
-// Récupérer les arguments de ligne de commande
-const url = process.argv[2];
-const outputDir = process.argv[3];
-const format = process.argv[4] || 'png'; // Utiliser png par défaut
+// Analyser les arguments et exécuter
+const { url, outputDir, format } = parseArgs();
+
+// Si pas d'URL et pas --help, afficher l'aide
+if (!url) {
+  console.error('Erreur: URL manquante');
+  showHelp();
+  process.exit(1);
+}
 
 // Exécuter la fonction
 takeScreenshot(url, outputDir, format);
