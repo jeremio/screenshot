@@ -7,9 +7,13 @@
     "screenshot": "./src/main.js"
   },
   "scripts": {
-    "screenshot": "node src/main.js"
+    "screenshot": "node src/main.js",
+    "lint": "eslint ."
   },
   "devDependencies": {
+    "@eslint/js": "^9.26.0",
+    "eslint": "^9.26.0",
+    "globals": "^16.1.0",
     "puppeteer": "^21.11.0"
   }
 }
