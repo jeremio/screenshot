@@ -30,10 +30,7 @@ function validateQuality(value) {
 }
 
 function validateBoolean(value) {
-  if (value && (value.toLowerCase() === 'false' || value === '0')) {
-    return false;
-  }
-  return true;
+  return !(value && (value.toLowerCase() === 'false' || value === '0'));
 }
 
 function validatePath(value, name) {
