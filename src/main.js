@@ -89,7 +89,8 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
     // Lancer le navigateur
     const browser = await puppeteer.launch({
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: '/usr/bin/google-chrome'
     });
     
     // Ouvrir une nouvelle page

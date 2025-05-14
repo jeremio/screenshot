@@ -84,7 +84,7 @@ export function showHelp() {
 Usage: pnpm screenshot <url> [options]
 
 Options:
-  --output, -o <dir>      Dossier de destination (par défaut: ./screenshots)
+  --output, -o <dir>      Dossier de destination (par défaut: .)
   --format, -f <format>   Format d'image: png, jpeg, webp (par défaut: png)
   --delay, -d <ms>        Délai en millisecondes avant la capture (par défaut: 0)
   --quality, -q <1-100>   Qualité pour jpeg/webp (par défaut: 85)
