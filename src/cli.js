@@ -29,8 +29,16 @@ function validateQuality(value) {
   return num;
 }
 
-function validateBoolean(value) {
-  return !(value && (value.toLowerCase() === 'false' || value === '0'));
+function validateBoolean(value, optionName) {
+  if (typeof value === 'string') {
+    const lowerValue = value.toLowerCase();
+    if (lowerValue === 'true' || lowerValue === '1') return true;
+    if (lowerValue === 'false' || lowerValue === '0') return false;
+  }
+  // Si nous arrivons ici, la valeur n'est pas une chaîne booléenne reconnue
+  console.error(`Erreur: Valeur invalide pour l'option ${optionName}. Attendu 'true', 'false', '1', ou '0'. Reçu: "${value}"`);
+  showHelp(); // showHelp est disponible dans cette portée
+  process.exit(1);
 }
 
 function validatePath(value, name) {
@@ -42,14 +50,24 @@ function validatePath(value, name) {
   return value;
 }
 
+function validateFormat(value) {
+  const lowerCaseValue = value.toLowerCase();
+  const validFormats = ['png', 'jpeg', 'webp'];
+  if (!validFormats.includes(lowerCaseValue)) {
+    console.error(`Erreur: Format d'image non supporté : "${value}". Formats valides : png, jpeg, webp.`);
+    process.exit(1);
+  }
+  return lowerCaseValue;
+}
+
 const ARG_OPTIONS = [
   { names: ['--output', '-o'], key: 'outputDir', takesValue: true },
-  { names: ['--format', '-f'], key: 'format', takesValue: true },
+  { names: ['--format', '-f'], key: 'format', takesValue: true, validator: validateFormat },
   { names: ['--delay', '-d'], key: 'delay', takesValue: true, validator: (val) => validatePositiveNumber(val, 'Le délai') },
   { names: ['--quality', '-q'], key: 'quality', takesValue: true, validator: validateQuality },
   { names: ['--width', '-w'], key: 'width', takesValue: true, validator: (val) => validatePositiveNumber(val, 'La largeur') },
   { names: ['--height', '-h'], key: 'height', takesValue: true, validator: (val) => validatePositiveNumber(val, 'La hauteur') },
-  { names: ['--full-page', '-fp'], key: 'fullPage', takesValue: true, validator: validateBoolean },
+  { names: ['--full-page', '-fp'], key: 'fullPage', takesValue: true, validator: (val) => validateBoolean(val, '--full-page') },
   { names: ['--executable-path', '-ep'], key: 'executablePath', takesValue: true, validator: (val) => validatePath(val, '--executable-path') },
   { names: ['--help'], action: () => { showHelp(); process.exit(0); } }
 ];
@@ -67,7 +85,7 @@ export function parseArgs() {
       if (optionConfig.action) {
         optionConfig.action();
       } else if (optionConfig.takesValue) {
-        if (i + 1 < args.length) {
+        if (i + 1 < args.length && !args[i+1].startsWith('-')) {
           i++;
           let value = args[i];
           if (optionConfig.validator) {
@@ -107,7 +125,7 @@ Options:
   --quality, -q <1-100>          Qualité pour jpeg/webp (par défaut: 85)
   --width, -w <pixels>           Largeur de la fenêtre en pixels (par défaut: 1920)
   --height, -h <pixels>          Hauteur de la fenêtre en pixels (par défaut: 1080)
-  --full-page, -fp <bool>        Capturer la page entière (par défaut: true)
+  --full-page, -fp <bool>        Capturer la page entière (par défaut: true). Valeurs acceptées: true, false, 1, 0.
   --executable-path, -ep <path>  Chemin vers l'exécutable du navigateur (par défaut: ${DEFAULT_CONFIG.executablePath})
   --help                         Afficher cette aide
 

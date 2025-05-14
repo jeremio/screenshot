@@ -42,14 +42,15 @@ screenshot <url> [options]
 
 ### Options
 
-- `--output`, `-o` : Dossier de destination (par défaut: répertoire courant d'où la commande est exécutée)
-- `--format`, `-f` : Format d'image - png, jpeg ou webp (par défaut: `png`)
-- `--delay`, `-d` : Délai en millisecondes avant la capture (par défaut: `0`)
-- `--quality`, `-q` : Qualité pour jpeg/webp de 1 à 100 (par défaut: `85`)
-- `--width`, `-w` : Largeur de la fenêtre en pixels (par défaut: `1920`)
-- `--height`, `-h` : Hauteur de la fenêtre en pixels (par défaut: `1080`)
-- `--full-page`, `-fp` : Capturer la page entière ou seulement la partie visible (par défaut: `true`)
-- `--help` : Afficher l'aide
+- `--output`, `-o <dir>` : Dossier de destination (par défaut: répertoire courant d'où la commande est exécutée)
+- `--format`, `-f <format>` : Format d'image - png, jpeg ou webp (par défaut: `png`)
+- `--delay`, `-d <ms>` : Délai en millisecondes avant la capture (par défaut: `0`)
+- `--quality`, `-q <1-100>` : Qualité pour jpeg/webp de 1 à 100 (par défaut: `85`)
+- `--width`, `-w <pixels>` : Largeur de la fenêtre en pixels (par défaut: `1920`)
+- `--height`, `-h <pixels>` : Hauteur de la fenêtre en pixels (par défaut: `1080`)
+- `--full-page`, `-fp <bool>` : Capturer la page entière ou seulement la partie visible. Valeurs acceptées: `true`, `false`, `1`, `0` (par défaut: `true`)
+- `--executable-path`, `-ep <path>` : Chemin vers l'exécutable du navigateur (par défaut: utilise la version de Chromium intégrée à Puppeteer)
+- `--help` : Afficher cette aide
 
 ### Exemples
 
@@ -89,7 +90,7 @@ pnpm screenshot https://example.com -o ./captures
 # Version globale
 screenshot https://example.com -o ./captures
 ```
-*L'image sera enregistrée dans le dossier `./captures/` relatif à l'endroit d'où vous exécutez la commande*
+*L'image sera enregistrée dans le dossier `./captures/` relatif à l'endroit d'où vous exécutez la commande.*
 
 4. **Spécifier uniquement le format**
 
@@ -248,8 +249,8 @@ pnpm unlink --global
 ## Pourquoi utiliser les différentes options ?
 
 ### Mode page entière vs viewport
-- **Page entière** (`--full-page true`) : Capture toute la page, même les parties non visibles sans défilement
-- **Viewport uniquement** (`--full-page false`) : Capture uniquement ce qui est visible dans la fenêtre du navigateur
+- **Page entière** (`--full-page true` ou `1`) : Capture toute la page, même les parties non visibles sans défilement
+- **Viewport uniquement** (`--full-page false` ou `0`) : Capture uniquement ce qui est visible dans la fenêtre du navigateur
 
 ### Délai avant capture
 Le délai peut être utile dans plusieurs cas :
@@ -269,6 +270,12 @@ Utile pour :
 - PNG : pour une qualité parfaite (interfaces, texte)
 - JPEG : pour des fichiers plus légers (photos, grandes images)
 - WebP : pour un bon compromis entre qualité et taille
+
+### Chemin de l'exécutable du navigateur
+L'option `--executable-path` permet de spécifier un navigateur autre que celui fourni par Puppeteer. Utile si :
+- Vous voulez utiliser une version spécifique de Chrome/Chromium.
+- Puppeteer ne parvient pas à télécharger son navigateur (pare-feu, etc.).
+- Vous avez une installation portable du navigateur.
 
 ## Structure des fichiers générés
 
@@ -294,8 +301,8 @@ domaine-exemple-com_1920x1080_2025-04-14T12-30-45.png
 Si vous rencontrez des erreurs, assurez-vous que:
 
 1. Puppeteer est correctement installé (via `pnpm install`)
-2. L'URL est valide et accessible
-3. Vous avez les droits d'écriture dans le dossier de destination
+2. L'URL est valide et accessible.
+3. Vous avez les droits d'écriture dans le dossier de destination.
 4. Chrome ou Chromium est installé et accessible (le script essaie d'utiliser `/usr/bin/google-chrome` par défaut, vérifiez ce chemin si besoin)
 
 ### Dépannage de l'installation globale
@@ -304,9 +311,7 @@ Si la commande globale ne fonctionne pas :
 
 1. Vérifiez que le script a un shebang et est exécutable :
    ```bash
-   # Ajouter le shebang
-   echo '#!/usr/bin/env node' | cat - src/main.js > temp && mv temp src/main.js
-   
+   # Assurez-vous que src/main.js commence par #!/usr/bin/env node
    # Rendre exécutable
    chmod +x src/main.js
    ```
@@ -316,8 +321,9 @@ Si la commande globale ne fonctionne pas :
    # Configurer pnpm correctement
    pnpm setup
    
-   # Recharger votre fichier de configuration shell
+   # Recharger votre fichier de configuration shell 
    source ~/.bashrc
+   source ~/.zshrc
    ```
 
 3. Refaites le lien global :
