@@ -6,15 +6,19 @@ import { normalizeUrl, generateFilename } from './utils.js';
 
 export async function takeScreenshot(
   url,
-  outputDir,
-  format = DEFAULT_CONFIG.format,
-  delay = DEFAULT_CONFIG.delay,
-  quality = DEFAULT_CONFIG.quality,
-  width = DEFAULT_CONFIG.width,
-  height = DEFAULT_CONFIG.height,
-  fullPage = DEFAULT_CONFIG.fullPage,
-  executablePath = DEFAULT_CONFIG.executablePath
+  options = {}
 ) {
+  const {
+    outputDir = DEFAULT_CONFIG.outputDir,
+    format = DEFAULT_CONFIG.format,
+    delay = DEFAULT_CONFIG.delay,
+    quality = DEFAULT_CONFIG.quality,
+    width = DEFAULT_CONFIG.width,
+    height = DEFAULT_CONFIG.height,
+    fullPage = DEFAULT_CONFIG.fullPage,
+    executablePath = DEFAULT_CONFIG.executablePath
+  } = options;
+
   const validFormats = ['png', 'jpeg', 'webp'];
   const lowerCaseFormat = format.toLowerCase();
 
@@ -23,7 +27,7 @@ export async function takeScreenshot(
     throw new Error(`Format d'image non supporté : "${format}". Formats valides : png, jpeg, webp.`);
   }
 
-  const currentUrl = normalizeUrl(url); 
+  const currentUrl = normalizeUrl(url);
 
   console.log(`Prise de capture d'écran de: ${currentUrl}`);
   console.log(`Format: ${lowerCaseFormat}, Résolution: ${width}x${height}, Page entière: ${fullPage ? 'Oui' : 'Non'}`);
@@ -35,7 +39,7 @@ export async function takeScreenshot(
   const currentExecutionDir = process.cwd();
   let screenshotsDir;
 
-  if (!outputDir) {
+  if (outputDir === '.') {
     screenshotsDir = currentExecutionDir;
   } else {
     screenshotsDir = path.isAbsolute(outputDir)

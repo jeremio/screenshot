@@ -27,7 +27,7 @@ export function generateFilename(url, width, height, format) {
     .replace(/^https?:\/\//, '') // Supprimer http(s)://
     .replace(/[^a-zA-Z0-9_.-]/g, '-') // Remplacer les caractères non alphanumériques (sauf _, ., -) par des tirets
     .replace(/-+/g, '-') // Remplacer les tirets multiples par un seul
-    .replace(/^-+|-+$/g, '') // Supprimer les tirets en début/fin
+    .replace(/(?:^-+|-+$)/g, '') // Supprimer les tirets en début/fin
     .substring(0, 50); // Limiter la longueur pour éviter des noms de fichiers trop longs
   
   return `${urlForFilename}_${width}x${height}_${timestamp}.${format}`;

@@ -1,5 +1,6 @@
 // Configuration par défaut
 export const DEFAULT_CONFIG = {
+  outputDir: '.',
   width: 1920,
   height: 1080,
   format: 'png',
@@ -9,81 +10,92 @@ export const DEFAULT_CONFIG = {
   executablePath: '/usr/bin/google-chrome'
 };
 
+// Fonctions de validation
+function validatePositiveNumber(value, name) {
+  const num = parseInt(value, 10);
+  if (isNaN(num) || num <= 0) {
+    console.error(`Erreur: ${name} doit être un nombre positif.`);
+    process.exit(1);
+  }
+  return num;
+}
+
+function validateQuality(value) {
+  const num = parseInt(value, 10);
+  if (isNaN(num) || num < 1 || num > 100) {
+    console.error('Erreur: La qualité doit être un nombre entre 1 et 100.');
+    process.exit(1);
+  }
+  return num;
+}
+
+function validateBoolean(value) {
+  if (value && (value.toLowerCase() === 'false' || value === '0')) {
+    return false;
+  }
+  return true;
+}
+
+function validatePath(value, name) {
+  if (!value || value.startsWith('-')) {
+    console.error(`Erreur: Le chemin pour ${name} est manquant ou invalide.`);
+    showHelp();
+    process.exit(1);
+  }
+  return value;
+}
+
+const ARG_OPTIONS = [
+  { names: ['--output', '-o'], key: 'outputDir', takesValue: true },
+  { names: ['--format', '-f'], key: 'format', takesValue: true },
+  { names: ['--delay', '-d'], key: 'delay', takesValue: true, validator: (val) => validatePositiveNumber(val, 'Le délai') },
+  { names: ['--quality', '-q'], key: 'quality', takesValue: true, validator: validateQuality },
+  { names: ['--width', '-w'], key: 'width', takesValue: true, validator: (val) => validatePositiveNumber(val, 'La largeur') },
+  { names: ['--height', '-h'], key: 'height', takesValue: true, validator: (val) => validatePositiveNumber(val, 'La hauteur') },
+  { names: ['--full-page', '-fp'], key: 'fullPage', takesValue: true, validator: validateBoolean },
+  { names: ['--executable-path', '-ep'], key: 'executablePath', takesValue: true, validator: (val) => validatePath(val, '--executable-path') },
+  { names: ['--help'], action: () => { showHelp(); process.exit(0); } }
+];
+
 // Fonction pour analyser les arguments de ligne de commande
 export function parseArgs() {
   const args = process.argv.slice(2);
-  let url = '';
-  let outputDir = null;
-  let format = DEFAULT_CONFIG.format;
-  let delay = DEFAULT_CONFIG.delay;
-  let quality = DEFAULT_CONFIG.quality;
-  let width = DEFAULT_CONFIG.width;
-  let height = DEFAULT_CONFIG.height;
-  let fullPage = DEFAULT_CONFIG.fullPage;
-  let executablePath = DEFAULT_CONFIG.executablePath;
+  const parsedArgs = { ...DEFAULT_CONFIG, url: '' };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
-    if (arg.startsWith('--') || arg.startsWith('-')) {
-      // C'est une option, la traiter avec sa valeur
-      if (arg === '--output' || arg === '-o') {
-        outputDir = args[++i]; // Prendre la valeur suivante
-      } else if (arg === '--format' || arg === '-f') {
-        format = args[++i]; // Prendre la valeur suivante
-      } else if (arg === '--delay' || arg === '-d') {
-        delay = parseInt(args[++i], 10); // Convertir en nombre
-        if (isNaN(delay) || delay < 0) {
-          console.error('Erreur: Le délai doit être un nombre positif en millisecondes');
-          process.exit(1);
-        }
-      } else if (arg === '--quality' || arg === '-q') {
-        quality = parseInt(args[++i], 10); // Convertir en nombre
-        if (isNaN(quality) || quality < 1 || quality > 100) {
-          console.error('Erreur: La qualité doit être un nombre entre 1 et 100');
-          process.exit(1);
-        }
-      } else if (arg === '--width' || arg === '-w') {
-        width = parseInt(args[++i], 10); // Convertir en nombre
-        if (isNaN(width) || width <= 0) {
-          console.error('Erreur: La largeur doit être un nombre positif');
-          process.exit(1);
-        }
-      } else if (arg === '--height' || arg === '-h') {
-        height = parseInt(args[++i], 10); // Convertir en nombre
-        if (isNaN(height) || height <= 0) {
-          console.error('Erreur: La hauteur doit être un nombre positif');
-          process.exit(1);
-        }
-      } else if (arg === '--full-page' || arg === '-fp') {
-        const value = args[++i];
-        if (value && (value.toLowerCase() === 'false' || value === '0')) {
-          fullPage = false;
+    const optionConfig = ARG_OPTIONS.find(opt => opt.names.includes(arg));
+
+    if (optionConfig) {
+      if (optionConfig.action) {
+        optionConfig.action();
+      } else if (optionConfig.takesValue) {
+        if (i + 1 < args.length) {
+          i++;
+          let value = args[i];
+          if (optionConfig.validator) {
+            value = optionConfig.validator(value);
+          }
+          parsedArgs[optionConfig.key] = value;
         } else {
-          fullPage = true;
-        }
-      } else if (arg === '--executable-path' || arg === '-ep') {
-        executablePath = args[++i];
-        if (!executablePath || executablePath.startsWith('-')) {
-          console.error('Erreur: Le chemin pour --executable-path est manquant ou invalide.');
+          console.error(`Erreur: Valeur manquante pour l'option ${arg}`);
           showHelp();
           process.exit(1);
         }
-      } else if (arg === '--help') {
-        showHelp();
-        process.exit(0);
-      } else {
-        console.error(`Option non reconnue: ${arg}`);
-        showHelp();
-        process.exit(1);
       }
-    } else if (!url) {
-      // Premier argument non-option est l'URL
-      url = arg;
+    } else if (arg.startsWith('-')) {
+      console.error(`Option non reconnue: ${arg}`);
+      showHelp();
+      process.exit(1);
+    } else if (!parsedArgs.url) {
+      parsedArgs.url = arg;
+    } else {
+      console.error(`Argument non reconnu ou URL déjà spécifiée: ${arg}`);
+      showHelp();
+      process.exit(1);
     }
   }
-
-  return { url, outputDir, format, delay, quality, width, height, fullPage, executablePath };
+  return parsedArgs;
 }
 
 // Afficher l'aide

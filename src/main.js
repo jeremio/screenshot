@@ -13,8 +13,7 @@ async function main() {
   }
 
   try {
-    const filePath = await takeScreenshot(
-      url,
+    const options = {
       outputDir,
       format,
       delay,
@@ -23,6 +22,10 @@ async function main() {
       height,
       fullPage,
       executablePath
+    };
+    const filePath = await takeScreenshot(
+      url,
+      options
     );
     // Ajouter un log final utilisant filePath
     console.log(`(main.js) Opération terminée avec succès. Fichier enregistré à : ${filePath}`);
