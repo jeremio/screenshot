@@ -23,11 +23,10 @@ export async function takeScreenshot(
     throw new Error(`Format d'image non supporté : "${format}". Formats valides : png, jpeg, webp.`);
   }
 
-  const normalizedFormat = lowerCaseFormat;
   const currentUrl = normalizeUrl(url); 
 
   console.log(`Prise de capture d'écran de: ${currentUrl}`);
-  console.log(`Format: ${normalizedFormat}, Résolution: ${width}x${height}, Page entière: ${fullPage ? 'Oui' : 'Non'}`);
+  console.log(`Format: ${lowerCaseFormat}, Résolution: ${width}x${height}, Page entière: ${fullPage ? 'Oui' : 'Non'}`);
 
   if (delay > 0) {
     console.log(`Délai avant capture: ${delay}ms`);
@@ -50,7 +49,8 @@ export async function takeScreenshot(
     fs.mkdirSync(screenshotsDir, { recursive: true });
   }
 
-  const filename = generateFilename(currentUrl, width, height, normalizedFormat);
+  // Utiliser lowerCaseFormat pour générer le nom de fichier
+  const filename = generateFilename(currentUrl, width, height, lowerCaseFormat);
   const filePath = path.join(screenshotsDir, filename);
 
   try {
@@ -74,10 +74,10 @@ export async function takeScreenshot(
     const screenshotOptions = {
       path: filePath,
       fullPage: fullPage,
-      type: normalizedFormat
+      type: lowerCaseFormat
     };
 
-    if (normalizedFormat === 'jpeg' || normalizedFormat === 'webp') {
+    if (lowerCaseFormat === 'jpeg' || lowerCaseFormat === 'webp') {
       screenshotOptions.quality = quality;
       console.log(`Qualité d'image: ${quality}%`);
     }
@@ -88,9 +88,6 @@ export async function takeScreenshot(
     console.log(`Capture d'écran enregistrée: ${filePath}`);
     return filePath;
   } catch (error) {
-    // Ajouter plus de contexte à l'erreur avant de la relancer si besoin,
-    // ou la relancer telle quelle.
-    // console.error('Erreur (capture.js) lors de la capture d\'écran:', error.message); // Ce log est maintenant géré par main.js
     throw new Error(`Erreur lors de la capture d'écran pour ${currentUrl}: ${error.message}`);
   }
 }
