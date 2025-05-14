@@ -5,23 +5,18 @@
 import puppeteer from 'puppeteer';
 import path from 'path';
 import fs from 'fs';
-// import { fileURLToPath } from 'url';
+// import { fileURLToPath } from 'url'; // Plus utilisé directement ici
 import { DEFAULT_CONFIG, parseArgs, showHelp } from './cli.js';
-
-// Obtenir le répertoire courant en ESM
-// const __filename = fileURLToPath(import.meta.url); // Plus nécessaire ici si non utilisé
-// const __dirname = path.dirname(__filename); // Plus nécessaire ici si non utilisé
-
 
 // Fonction principale pour prendre une capture d'écran
 async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format, 
                              delay = DEFAULT_CONFIG.delay, quality = DEFAULT_CONFIG.quality,
                              width = DEFAULT_CONFIG.width, height = DEFAULT_CONFIG.height,
-                             fullPage = DEFAULT_CONFIG.fullPage) {
+                             fullPage = DEFAULT_CONFIG.fullPage, executablePath) {
   // Vérifier si l'URL est valide
   if (!url) {
     console.error('Erreur: Veuillez fournir une URL valide');
-    showHelp(); // Utilise la fonction importée
+    showHelp();
     process.exit(1);
   }
 
@@ -86,14 +81,17 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
   const filePath = path.join(screenshotsDir, filename);
 
   try {
-    // Lancer le navigateur
-    const browser = await puppeteer.launch({
+    const launchOptions = {
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: '/usr/bin/google-chrome'
-    });
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    };
+
+    // Utiliser le chemin de l'exécutable fourni ou celui par défaut
+    // La validation dans parseArgs s'assure que executablePath a une valeur valide ici.
+    launchOptions.executablePath = executablePath; 
+    console.log(`Utilisation de l'exécutable du navigateur : ${executablePath}`);
     
-    // Ouvrir une nouvelle page
+    const browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
     
     // Définir la taille d'écran spécifiée
@@ -136,7 +134,7 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
 }
 
 // Analyser les arguments et exécuter
-const { url, outputDir, format, delay, quality, width, height, fullPage } = parseArgs(); // Utilise la fonction importée
+const { url, outputDir, format, delay, quality, width, height, fullPage, executablePath } = parseArgs();
 
 // Si pas d'URL et pas --help (géré dans parseArgs maintenant), vérifier l'URL ici
 if (!url) {
@@ -148,4 +146,4 @@ if (!url) {
 }
 
 // Exécuter la fonction
-takeScreenshot(url, outputDir, format, delay, quality, width, height, fullPage);
+takeScreenshot(url, outputDir, format, delay, quality, width, height, fullPage, executablePath);
