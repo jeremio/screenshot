@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import path from 'path';
 import fs from 'fs';
 import { DEFAULT_CONFIG } from './cli.js';
-import { normalizeUrl, generateFilename } from './utils.js'; // Importer les utilitaires
+import { normalizeUrl, generateFilename } from './utils.js';
 
 export async function takeScreenshot(
   url,
@@ -16,13 +16,14 @@ export async function takeScreenshot(
   executablePath = DEFAULT_CONFIG.executablePath
 ) {
   const validFormats = ['png', 'jpeg', 'webp'];
-  if (!validFormats.includes(format.toLowerCase())) {
-    console.error(`Erreur (capture.js): Format "${format}" non supporté. Utilisez png, jpeg ou webp.`);
-    process.exit(1); 
+  const lowerCaseFormat = format.toLowerCase();
+
+  if (!validFormats.includes(lowerCaseFormat)) {
+    // Lancer une erreur au lieu de quitter directement
+    throw new Error(`Format d'image non supporté : "${format}". Formats valides : png, jpeg, webp.`);
   }
 
-  const normalizedFormat = format.toLowerCase();
-  // Utiliser l'utilitaire pour normaliser l'URL
+  const normalizedFormat = lowerCaseFormat;
   const currentUrl = normalizeUrl(url); 
 
   console.log(`Prise de capture d'écran de: ${currentUrl}`);
@@ -49,7 +50,6 @@ export async function takeScreenshot(
     fs.mkdirSync(screenshotsDir, { recursive: true });
   }
 
-  // Utiliser l'utilitaire pour générer le nom de fichier
   const filename = generateFilename(currentUrl, width, height, normalizedFormat);
   const filePath = path.join(screenshotsDir, filename);
 
@@ -88,7 +88,9 @@ export async function takeScreenshot(
     console.log(`Capture d'écran enregistrée: ${filePath}`);
     return filePath;
   } catch (error) {
-    console.error('Erreur (capture.js) lors de la capture d\'écran:', error.message);
-    throw error;
+    // Ajouter plus de contexte à l'erreur avant de la relancer si besoin,
+    // ou la relancer telle quelle.
+    // console.error('Erreur (capture.js) lors de la capture d\'écran:', error.message); // Ce log est maintenant géré par main.js
+    throw new Error(`Erreur lors de la capture d'écran pour ${currentUrl}: ${error.message}`);
   }
 }
