@@ -5,7 +5,7 @@
  */
 export function normalizeUrl(url) {
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    return 'http://' + url;
+    return 'https://' + url;
   }
   return url;
 }
