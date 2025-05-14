@@ -5,114 +5,13 @@
 import puppeteer from 'puppeteer';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
+// import { fileURLToPath } from 'url';
+import { DEFAULT_CONFIG, parseArgs, showHelp } from './cli.js';
 
 // Obtenir le répertoire courant en ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url); // Plus nécessaire ici si non utilisé
+// const __dirname = path.dirname(__filename); // Plus nécessaire ici si non utilisé
 
-// Configuration par défaut
-const DEFAULT_CONFIG = {
-  width: 1920,
-  height: 1080,
-  format: 'png',
-  quality: 85,
-  delay: 0,
-  fullPage: true
-};
-
-// Fonction pour analyser les arguments de ligne de commande
-function parseArgs() {
-  const args = process.argv.slice(2);
-  let url = '';
-  let outputDir = null;
-  let format = DEFAULT_CONFIG.format;
-  let delay = DEFAULT_CONFIG.delay;
-  let quality = DEFAULT_CONFIG.quality;
-  let width = DEFAULT_CONFIG.width;
-  let height = DEFAULT_CONFIG.height;
-  let fullPage = DEFAULT_CONFIG.fullPage;
-
-  // Première valeur non-option est l'URL
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    
-    if (arg.startsWith('--') || arg.startsWith('-')) {
-      // C'est une option, la traiter avec sa valeur
-      if (arg === '--output' || arg === '-o') {
-        outputDir = args[++i]; // Prendre la valeur suivante
-      } else if (arg === '--format' || arg === '-f') {
-        format = args[++i]; // Prendre la valeur suivante
-      } else if (arg === '--delay' || arg === '-d') {
-        delay = parseInt(args[++i], 10); // Convertir en nombre
-        if (isNaN(delay) || delay < 0) {
-          console.error('Erreur: Le délai doit être un nombre positif en millisecondes');
-          process.exit(1);
-        }
-      } else if (arg === '--quality' || arg === '-q') {
-        quality = parseInt(args[++i], 10); // Convertir en nombre
-        if (isNaN(quality) || quality < 1 || quality > 100) {
-          console.error('Erreur: La qualité doit être un nombre entre 1 et 100');
-          process.exit(1);
-        }
-      } else if (arg === '--width' || arg === '-w') {
-        width = parseInt(args[++i], 10); // Convertir en nombre
-        if (isNaN(width) || width <= 0) {
-          console.error('Erreur: La largeur doit être un nombre positif');
-          process.exit(1);
-        }
-      } else if (arg === '--height' || arg === '-h') {
-        height = parseInt(args[++i], 10); // Convertir en nombre
-        if (isNaN(height) || height <= 0) {
-          console.error('Erreur: La hauteur doit être un nombre positif');
-          process.exit(1);
-        }
-      } else if (arg === '--full-page' || arg === '-fp') {
-        const value = args[++i];
-        if (value && (value.toLowerCase() === 'false' || value === '0')) {
-          fullPage = false;
-        } else {
-          fullPage = true;
-        }
-      } else if (arg === '--help') {
-        showHelp();
-        process.exit(0);
-      } else {
-        console.error(`Option non reconnue: ${arg}`);
-        showHelp();
-        process.exit(1);
-      }
-    } else if (!url) {
-      // Premier argument non-option est l'URL
-      url = arg;
-    }
-  }
-
-  return { url, outputDir, format, delay, quality, width, height, fullPage };
-}
-
-// Afficher l'aide
-function showHelp() {
-  console.log(`
-Usage: pnpm screenshot <url> [options]
-
-Options:
-  --output, -o <dir>      Dossier de destination (par défaut: ./screenshots)
-  --format, -f <format>   Format d'image: png, jpeg, webp (par défaut: png)
-  --delay, -d <ms>        Délai en millisecondes avant la capture (par défaut: 0)
-  --quality, -q <1-100>   Qualité pour jpeg/webp (par défaut: 85)
-  --width, -w <pixels>    Largeur de la fenêtre en pixels (par défaut: 1920)
-  --height, -h <pixels>   Hauteur de la fenêtre en pixels (par défaut: 1080)
-  --full-page, -fp <bool> Capturer la page entière (par défaut: true)
-  --help                  Afficher cette aide
-
-Exemples:
-  pnpm screenshot https://example.com
-  pnpm screenshot https://example.com -o ./captures
-  pnpm screenshot https://example.com -fp false -f jpeg -q 90
-  pnpm screenshot https://example.com -d 2000 -w 375 -h 667 -f webp
-  `);
-}
 
 // Fonction principale pour prendre une capture d'écran
 async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format, 
@@ -122,7 +21,7 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
   // Vérifier si l'URL est valide
   if (!url) {
     console.error('Erreur: Veuillez fournir une URL valide');
-    showHelp();
+    showHelp(); // Utilise la fonction importée
     process.exit(1);
   }
 
@@ -190,8 +89,7 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
     // Lancer le navigateur
     const browser = await puppeteer.launch({
       headless: 'new',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: '/usr/bin/google-chrome'
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     
     // Ouvrir une nouvelle page
@@ -237,10 +135,12 @@ async function takeScreenshot(url, outputDir, format = DEFAULT_CONFIG.format,
 }
 
 // Analyser les arguments et exécuter
-const { url, outputDir, format, delay, quality, width, height, fullPage } = parseArgs();
+const { url, outputDir, format, delay, quality, width, height, fullPage } = parseArgs(); // Utilise la fonction importée
 
-// Si pas d'URL et pas --help, afficher l'aide
+// Si pas d'URL et pas --help (géré dans parseArgs maintenant), vérifier l'URL ici
 if (!url) {
+  // parseArgs gère déjà le --help et quitte.
+  // Si on arrive ici sans URL, c'est que --help n'a pas été fourni et qu'il manque l'URL.
   console.error('Erreur: URL manquante');
   showHelp();
   process.exit(1);
