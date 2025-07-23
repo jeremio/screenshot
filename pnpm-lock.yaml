@@ -888,8 +888,8 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
-  tar-fs@3.0.8:
-    resolution: {integrity: sha512-ZoROL70jptorGAlgAYiLoBLItEKw/fUxg9BSYK/dF/GAGYFJOJJJMvjPAKDJraCXFwadD456FCuvLWgfhMsPwg==}
+  tar-fs@3.1.0:
+    resolution: {integrity: sha512-5Mty5y/sOF1YWj1J6GiBodjlDc05CUR8PKXrsnFAiSG0xA+GHeWLovaZPYUDXkH/1iKRf2+M5+OrRgzC7O9b7w==}
 
   tar-stream@3.1.7:
     resolution: {integrity: sha512-qJj60CXt7IU1Ffyc3NJMjh6EkuCFej46zUqJ4J7pqYlThyd9bO0XBTmcOIhSzZJVWfsLks0+nle/j538YAW9RQ==}
@@ -1073,7 +1073,7 @@ snapshots:
       progress: 2.0.3
       proxy-agent: 6.5.0
       semver: 7.7.2
-      tar-fs: 3.0.8
+      tar-fs: 3.1.0
       yargs: 17.7.2
     transitivePeerDependencies:
       - bare-buffer
@@ -1924,7 +1924,7 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
-  tar-fs@3.0.8:
+  tar-fs@3.1.0:
     dependencies:
       pump: 3.0.2
       tar-stream: 3.1.7
