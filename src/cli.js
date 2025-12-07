@@ -7,7 +7,9 @@ export const DEFAULT_CONFIG = {
   quality: 85,
   delay: 0,
   fullPage: true,
-  executablePath: '/usr/bin/google-chrome'
+  executablePath: '/usr/bin/google-chrome',
+  timeout: 30000,
+  waitUntil: 'networkidle2'
 };
 
 // Fonctions de validation
@@ -60,6 +62,15 @@ function validateFormat(value) {
   return lowerCaseValue;
 }
 
+function validateWaitUntil(value) {
+  const validOptions = ['load', 'domcontentloaded', 'networkidle0', 'networkidle2'];
+  if (!validOptions.includes(value)) {
+    console.error(`Erreur: Option waitUntil invalide : "${value}". Options valides : ${validOptions.join(', ')}.`);
+    process.exit(1);
+  }
+  return value;
+}
+
 const ARG_OPTIONS = [
   { names: ['--output', '-o'], key: 'outputDir', takesValue: true },
   { names: ['--format', '-f'], key: 'format', takesValue: true, validator: validateFormat },
@@ -69,6 +80,8 @@ const ARG_OPTIONS = [
   { names: ['--height', '-h'], key: 'height', takesValue: true, validator: (val) => validatePositiveNumber(val, 'La hauteur') },
   { names: ['--full-page', '-fp'], key: 'fullPage', takesValue: true, validator: (val) => validateBoolean(val, '--full-page') },
   { names: ['--executable-path', '-ep'], key: 'executablePath', takesValue: true, validator: (val) => validatePath(val, '--executable-path') },
+  { names: ['--timeout', '-t'], key: 'timeout', takesValue: true, validator: (val) => validatePositiveNumber(val, 'Le timeout') },
+  { names: ['--wait-until', '-wu'], key: 'waitUntil', takesValue: true, validator: validateWaitUntil },
   { names: ['--help'], action: () => { showHelp(); process.exit(0); } }
 ];
 
@@ -127,6 +140,8 @@ Options:
   --height, -h <pixels>          Hauteur de la fenêtre en pixels (par défaut: 1080)
   --full-page, -fp <bool>        Capturer la page entière (par défaut: true). Valeurs acceptées: true, false, 1, 0.
   --executable-path, -ep <path>  Chemin vers l'exécutable du navigateur (par défaut: ${DEFAULT_CONFIG.executablePath})
+  --timeout, -t <ms>             Timeout de navigation en millisecondes (par défaut: 30000)
+  --wait-until, -wu <option>     Condition d'attente: load, domcontentloaded, networkidle0, networkidle2 (par défaut: networkidle2)
   --help                         Afficher cette aide
 
 Exemples:
@@ -135,5 +150,6 @@ Exemples:
   pnpm screenshot https://example.com -fp false -f jpeg -q 90
   pnpm screenshot https://example.com -d 2000 -w 375 -h 667 -f webp
   pnpm screenshot https://example.com -ep /opt/mybrowser/chrome
+  pnpm screenshot https://example.com -t 60000 -wu load
   `);
 }

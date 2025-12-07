@@ -2,12 +2,32 @@
  * Normalise une URL pour s'assurer qu'elle commence par http:// ou https://.
  * @param {string} url L'URL à normaliser.
  * @returns {string} L'URL normalisée.
+ * @throws {Error} Si l'URL est invalide ou utilise un protocole non sécurisé.
  */
 export function normalizeUrl(url) {
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    return 'https://' + url;
+  if (!url || typeof url !== 'string') {
+    throw new Error('URL invalide : doit être une chaîne non vide');
   }
-  return url;
+
+  // Vérifier les protocoles dangereux
+  const dangerousProtocols = ['file://', 'javascript:', 'data:'];
+  if (dangerousProtocols.some(proto => url.toLowerCase().startsWith(proto))) {
+    throw new Error(`Protocole non autorisé détecté dans l'URL`);
+  }
+
+  let normalizedUrl = url;
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    normalizedUrl = 'https://' + url;
+  }
+
+  // Valider que l'URL est bien formée
+  try {
+    new URL(normalizedUrl);
+  } catch (error) {
+    throw new Error(`URL mal formée : ${url}`);
+  }
+
+  return normalizedUrl;
 }
 
 /**

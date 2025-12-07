@@ -16,10 +16,17 @@ export async function takeScreenshot(
     width = DEFAULT_CONFIG.width,
     height = DEFAULT_CONFIG.height,
     fullPage = DEFAULT_CONFIG.fullPage,
-    executablePath = DEFAULT_CONFIG.executablePath
+    executablePath = DEFAULT_CONFIG.executablePath,
+    timeout = DEFAULT_CONFIG.timeout,
+    waitUntil = DEFAULT_CONFIG.waitUntil
   } = options;
 
-  const currentUrl = normalizeUrl(url);
+  let currentUrl;
+  try {
+    currentUrl = normalizeUrl(url);
+  } catch (error) {
+    throw new Error(`Validation URL échouée: ${error.message}`);
+  }
 
   console.log(`Prise de capture d'écran de: ${currentUrl}`);
   console.log(`Format: ${format}, Résolution: ${width}x${height}, Page entière: ${fullPage ? 'Oui' : 'Non'}`);
@@ -49,20 +56,34 @@ export async function takeScreenshot(
   const filename = generateFilename(currentUrl, width, height, format);
   const filePath = path.join(screenshotsDir, filename);
 
+  let browser;
   try {
     const launchOptions = {
       headless: true,
+      // AVERTISSEMENT: Ces flags désactivent certaines protections de sécurité.
+      // Utilisez-les uniquement dans des environnements de confiance (conteneurs, CI/CD).
+      // Pour un usage en production, configurez un environnement avec les permissions appropriées.
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: executablePath
     };
     console.log(`Utilisation de l'exécutable du navigateur : ${executablePath}`);
 
-    const browser = await puppeteer.launch(launchOptions);
+    browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
     await page.setViewport({ width, height });
 
     console.log(`Navigation vers ${currentUrl}...`);
-    await page.goto(currentUrl, { waitUntil: 'networkidle2' });
+    try {
+      await page.goto(currentUrl, {
+        waitUntil: waitUntil,
+        timeout: timeout
+      });
+    } catch (navError) {
+      if (navError.name === 'TimeoutError') {
+        throw new Error(`Timeout dépassé (${timeout}ms) lors du chargement de ${currentUrl}`);
+      }
+      throw new Error(`Erreur de navigation vers ${currentUrl}: ${navError.message}`);
+    }
 
     if (delay > 0) {
       console.log(`Attente de ${delay}ms avant capture...`);
@@ -82,11 +103,14 @@ export async function takeScreenshot(
 
     console.log("Prise de la capture d'écran...");
     await page.screenshot(screenshotOptions);
-    await browser.close();
 
     console.log(`Capture d'écran enregistrée: ${filePath}`);
     return filePath;
   } catch (error) {
     throw new Error(`Erreur lors de la capture d'écran pour ${currentUrl}: ${error.message}`);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 }
