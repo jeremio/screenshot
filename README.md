@@ -34,22 +34,24 @@ screenshot https://example.com -f jpeg
 
 ```bash
 # Version locale (dans le répertoire du projet)
-pnpm screenshot <url> [options]
+pnpm screenshot [url] [options]
 
 # Version globale (n'importe où dans le système)
-screenshot <url> [options]
+screenshot [url] [options]
 ```
 
 ### Options
 
-- `--output`, `-o <dir>` : Dossier de destination (par défaut: répertoire courant d'où la commande est exécutée)
-- `--format`, `-f <format>` : Format d'image - png, jpeg ou webp (par défaut: `png`)
-- `--delay`, `-d <ms>` : Délai en millisecondes avant la capture (par défaut: `0`)
-- `--quality`, `-q <1-100>` : Qualité pour jpeg/webp de 1 à 100 (par défaut: `85`)
-- `--width`, `-w <pixels>` : Largeur de la fenêtre en pixels (par défaut: `1920`)
-- `--height`, `-h <pixels>` : Hauteur de la fenêtre en pixels (par défaut: `1080`)
-- `--full-page`, `-fp <bool>` : Capturer la page entière ou seulement la partie visible. Valeurs acceptées: `true`, `false`, `1`, `0` (par défaut: `true`)
-- `--executable-path`, `-ep <path>` : Chemin vers l'exécutable du navigateur (par défaut: utilise la version de Chromium intégrée à Puppeteer)
+- `--output`, `-o [dir]` : Dossier de destination (par défaut: répertoire courant d'où la commande est exécutée)
+- `--format`, `-f [format]` : Format d'image - png, jpeg ou webp (par défaut: `png`)
+- `--delay`, `-d [ms]` : Délai en millisecondes avant la capture (par défaut: `0`)
+- `--quality`, `-q [1-100]` : Qualité pour jpeg/webp de 1 à 100 (par défaut: `85`)
+- `--width`, `-w [pixels]` : Largeur de la fenêtre en pixels (par défaut: `1920`)
+- `--height`, `-h [pixels]` : Hauteur de la fenêtre en pixels (par défaut: `1080`)
+- `--full-page`, `-fp [bool]` : Capturer la page entière ou seulement la partie visible. Valeurs acceptées: `true`, `false`, `1`, `0` (par défaut: `true`)
+- `--executable-path`, `-ep [path]` : Chemin vers l'exécutable du navigateur (par défaut: `/usr/bin/google-chrome`)
+- `--timeout`, `-t [ms]` : Timeout de navigation en millisecondes (par défaut: `30000`)
+- `--wait-until`, `-wu [option]` : Condition d'attente - load, domcontentloaded, networkidle0, networkidle2 (par défaut: `networkidle2`)
 - `--help` : Afficher cette aide
 
 ### Exemples
@@ -183,7 +185,20 @@ screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -h 76
 ```
 *Capture au format WebP, qualité 90%, après un délai de 1,5 seconde, en résolution 1024x768, dans le dossier ./captures/*
 
-11. **Utiliser un chemin absolu pour la sortie**
+11. **Personnaliser le timeout et la condition d'attente**
+
+```bash
+# Version locale
+pnpm screenshot https://example.com -t 60000 -wu load
+```
+
+```bash
+# Version globale
+screenshot https://example.com -t 60000 -wu load
+```
+*Attend jusqu'à 60 secondes (au lieu de 30 par défaut) et attend uniquement l'événement "load" au lieu de "networkidle2"*
+
+12. **Utiliser un chemin absolu pour la sortie**
 
 ```bash
 # Version locale
@@ -195,7 +210,7 @@ pnpm screenshot https://example.com -o /home/user/Documents/captures
 screenshot https://example.com -o /home/user/Documents/captures
 ```
 
-12. **Utiliser un chemin relatif complexe**
+13. **Utiliser un chemin relatif complexe**
 
 ```bash
 # Version locale
@@ -208,7 +223,7 @@ screenshot https://example.com -o ../archives/captures
 ```
 *L'image sera enregistrée dans le dossier parent `../archives/captures/` relatif à l'endroit d'où vous exécutez la commande*
 
-13. **Afficher l'aide**
+14. **Afficher l'aide**
 
 ```bash
 # Version locale
@@ -257,6 +272,15 @@ Le délai peut être utile dans plusieurs cas :
 - Sites avec animations ou chargements progressifs
 - Sites qui effectuent des requêtes AJAX après le chargement initial
 - Pages où vous souhaitez capturer un état spécifique après interaction
+
+### Timeout et condition d'attente
+Le timeout et la condition d'attente permettent de contrôler quand la capture doit être prise :
+- **Timeout** : Durée maximale d'attente avant d'abandonner (utile pour les sites lents)
+- **waitUntil** :
+  - `load` : Attend l'événement load (plus rapide, mais moins fiable)
+  - `domcontentloaded` : Attend que le DOM soit chargé
+  - `networkidle0` : Attend qu'il n'y ait plus de connexions réseau pendant 500ms
+  - `networkidle2` : Attend qu'il y ait au maximum 2 connexions réseau pendant 500ms (défaut)
 
 ### Résolution personnalisée
 Utile pour :
