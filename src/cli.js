@@ -9,7 +9,7 @@ export const DEFAULT_CONFIG = {
   fullPage: true,
   executablePath: '/usr/bin/google-chrome',
   timeout: 30000,
-  waitUntil: 'networkidle2'
+  waitUntil: 'networkidle2',
 };
 
 // Fonctions de validation
@@ -82,7 +82,7 @@ const ARG_OPTIONS = [
   { names: ['--executable-path', '-ep'], key: 'executablePath', takesValue: true, validator: (val) => validatePath(val, '--executable-path') },
   { names: ['--timeout', '-t'], key: 'timeout', takesValue: true, validator: (val) => validatePositiveNumber(val, 'Le timeout') },
   { names: ['--wait-until', '-wu'], key: 'waitUntil', takesValue: true, validator: validateWaitUntil },
-  { names: ['--help'], action: () => { showHelp(); process.exit(0); } }
+  { names: ['--help'], action: () => { showHelp(); process.exit(0); } },
 ];
 
 // Fonction pour analyser les arguments de ligne de commande

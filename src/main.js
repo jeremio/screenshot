@@ -23,11 +23,11 @@ async function main() {
       fullPage,
       executablePath,
       timeout,
-      waitUntil
+      waitUntil,
     };
     const filePath = await takeScreenshot(
       url,
-      options
+      options,
     );
     // Ajouter un log final utilisant filePath
     console.log(`(main.js) Opération terminée avec succès. Fichier enregistré à : ${filePath}`);

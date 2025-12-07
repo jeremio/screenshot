@@ -6,7 +6,7 @@ import { normalizeUrl, generateFilename } from './utils.js';
 
 export async function takeScreenshot(
   url,
-  options = {}
+  options = {},
 ) {
   const {
     outputDir = DEFAULT_CONFIG.outputDir,
@@ -18,7 +18,7 @@ export async function takeScreenshot(
     fullPage = DEFAULT_CONFIG.fullPage,
     executablePath = DEFAULT_CONFIG.executablePath,
     timeout = DEFAULT_CONFIG.timeout,
-    waitUntil = DEFAULT_CONFIG.waitUntil
+    waitUntil = DEFAULT_CONFIG.waitUntil,
   } = options;
 
   let currentUrl;
@@ -64,7 +64,7 @@ export async function takeScreenshot(
       // Utilisez-les uniquement dans des environnements de confiance (conteneurs, CI/CD).
       // Pour un usage en production, configurez un environnement avec les permissions appropriées.
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: executablePath
+      executablePath: executablePath,
     };
     console.log(`Utilisation de l'exécutable du navigateur : ${executablePath}`);
 
@@ -76,7 +76,7 @@ export async function takeScreenshot(
     try {
       await page.goto(currentUrl, {
         waitUntil: waitUntil,
-        timeout: timeout
+        timeout: timeout,
       });
     } catch (navError) {
       if (navError.name === 'TimeoutError') {
@@ -93,7 +93,7 @@ export async function takeScreenshot(
     const screenshotOptions = {
       path: filePath,
       fullPage: fullPage,
-      type: format
+      type: format,
     };
 
     if (format === 'jpeg' || format === 'webp') {
