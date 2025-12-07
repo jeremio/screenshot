@@ -320,6 +320,7 @@ which brave-browser
 **Exemple d'utilisation :**
 ```bash
 pnpm screenshot https://example.com -ep /usr/bin/chromium-browser
+pnpm screenshot https://google.com -ep /var/lib/flatpak/exports/bin/com.brave.Browser
 ```
 
 ## Structure des fichiers générés
