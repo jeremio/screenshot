@@ -129,19 +129,19 @@ export function parseArgs() {
 // Afficher l'aide
 export function showHelp() {
   console.log(`
-Usage: pnpm screenshot <url> [options]
+Usage: pnpm screenshot [url] [options]
 
 Options:
-  --output, -o <dir>             Dossier de destination (par défaut: répertoire courant)
-  --format, -f <format>          Format d'image: png, jpeg, webp (par défaut: png)
-  --delay, -d <ms>               Délai en millisecondes avant la capture (par défaut: 0)
-  --quality, -q <1-100>          Qualité pour jpeg/webp (par défaut: 85)
-  --width, -w <pixels>           Largeur de la fenêtre en pixels (par défaut: 1920)
-  --height, -h <pixels>          Hauteur de la fenêtre en pixels (par défaut: 1080)
-  --full-page, -fp <bool>        Capturer la page entière (par défaut: true). Valeurs acceptées: true, false, 1, 0.
-  --executable-path, -ep <path>  Chemin vers l'exécutable du navigateur (par défaut: ${DEFAULT_CONFIG.executablePath})
-  --timeout, -t <ms>             Timeout de navigation en millisecondes (par défaut: 30000)
-  --wait-until, -wu <option>     Condition d'attente: load, domcontentloaded, networkidle0, networkidle2 (par défaut: networkidle2)
+  --output, -o [dir]             Dossier de destination (par défaut: répertoire courant)
+  --format, -f [format]          Format d'image: png, jpeg, webp (par défaut: png)
+  --delay, -d [ms]               Délai en millisecondes avant la capture (par défaut: 0)
+  --quality, -q [1-100]          Qualité pour jpeg/webp (par défaut: 85)
+  --width, -w [pixels]           Largeur de la fenêtre en pixels (par défaut: 1920)
+  --height, -h [pixels]          Hauteur de la fenêtre en pixels (par défaut: 1080)
+  --full-page, -fp [bool]        Capturer la page entière (par défaut: true). Valeurs acceptées: true, false, 1, 0.
+  --executable-path, -ep [path]  Chemin vers l'exécutable du navigateur (par défaut: ${DEFAULT_CONFIG.executablePath})
+  --timeout, -t [ms]             Timeout de navigation en millisecondes (par défaut: 30000)
+  --wait-until, -wu [option]     Condition d'attente: load, domcontentloaded, networkidle0, networkidle2 (par défaut: networkidle2)
   --help                         Afficher cette aide
 
 Exemples:
