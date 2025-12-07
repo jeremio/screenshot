@@ -64,9 +64,15 @@ export async function takeScreenshot(
       // Utilisez-les uniquement dans des environnements de confiance (conteneurs, CI/CD).
       // Pour un usage en production, configurez un environnement avec les permissions appropriées.
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: executablePath,
     };
-    console.log(`Utilisation de l'exécutable du navigateur : ${executablePath}`);
+
+    // N'ajouter executablePath que s'il est défini
+    if (executablePath) {
+      launchOptions.executablePath = executablePath;
+      console.log(`Utilisation de l'exécutable du navigateur : ${executablePath}`);
+    } else {
+      console.log('Utilisation du Chromium intégré à Puppeteer');
+    }
 
     browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();

@@ -7,7 +7,7 @@ export const DEFAULT_CONFIG = {
   quality: 85,
   delay: 0,
   fullPage: true,
-  executablePath: '/usr/bin/google-chrome',
+  executablePath: undefined, // Laisser Puppeteer utiliser son Chromium intégré
   timeout: 30000,
   waitUntil: 'networkidle2',
 };

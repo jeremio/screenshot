@@ -49,7 +49,7 @@ screenshot [url] [options]
 - `--width`, `-w [pixels]` : Largeur de la fenêtre en pixels (par défaut: `1920`)
 - `--height`, `-h [pixels]` : Hauteur de la fenêtre en pixels (par défaut: `1080`)
 - `--full-page`, `-fp [bool]` : Capturer la page entière ou seulement la partie visible. Valeurs acceptées: `true`, `false`, `1`, `0` (par défaut: `true`)
-- `--executable-path`, `-ep [path]` : Chemin vers l'exécutable du navigateur (par défaut: `/usr/bin/google-chrome`)
+- `--executable-path`, `-ep [path]` : Chemin vers l'exécutable du navigateur (par défaut: utilise le Chromium intégré à Puppeteer)
 - `--timeout`, `-t [ms]` : Timeout de navigation en millisecondes (par défaut: `30000`)
 - `--wait-until`, `-wu [option]` : Condition d'attente - load, domcontentloaded, networkidle0, networkidle2 (par défaut: `networkidle2`)
 - `--help` : Afficher cette aide
@@ -296,10 +296,31 @@ Utile pour :
 - WebP : pour un bon compromis entre qualité et taille
 
 ### Chemin de l'exécutable du navigateur
-L'option `--executable-path` permet de spécifier un navigateur autre que celui fourni par Puppeteer. Utile si :
-- Vous voulez utiliser une version spécifique de Chrome/Chromium.
-- Puppeteer ne parvient pas à télécharger son navigateur (pare-feu, etc.).
-- Vous avez une installation portable du navigateur.
+Par défaut, Puppeteer utilise son propre Chromium intégré (téléchargé automatiquement lors de l'installation).
+
+L'option `--executable-path` permet de spécifier un navigateur différent. Utile si :
+- Vous voulez utiliser votre installation système de Chrome/Chromium/Brave
+- Vous avez besoin d'une version spécifique du navigateur
+- Puppeteer ne peut pas télécharger Chromium (restrictions réseau, pare-feu)
+- Vous avez une installation portable du navigateur
+
+**Chemins communs sur Linux :**
+- Google Chrome : `/usr/bin/google-chrome`
+- Chromium : `/usr/bin/chromium-browser` ou `/usr/bin/chromium`
+- Brave : `/usr/bin/brave-browser` ou `/usr/bin/brave`
+- Snap Chromium : `/snap/bin/chromium`
+
+**Pour trouver le chemin sur votre système :**
+```bash
+which google-chrome
+which chromium-browser
+which brave-browser
+```
+
+**Exemple d'utilisation :**
+```bash
+pnpm screenshot https://example.com -ep /usr/bin/chromium-browser
+```
 
 ## Structure des fichiers générés
 
@@ -324,10 +345,13 @@ domaine-exemple-com_1920x1080_2025-04-14T12-30-45.png
 
 Si vous rencontrez des erreurs, assurez-vous que:
 
-1. Puppeteer est correctement installé (via `pnpm install`)
-2. L'URL est valide et accessible.
-3. Vous avez les droits d'écriture dans le dossier de destination.
-4. Chrome ou Chromium est installé et accessible (le script essaie d'utiliser `/usr/bin/google-chrome` par défaut, vérifiez ce chemin si besoin)
+1. **Puppeteer est correctement installé** : Exécutez `pnpm install` dans le répertoire du projet
+2. **L'URL est valide et accessible** : Vérifiez que le site est joignable depuis votre navigateur
+3. **Droits d'écriture** : Assurez-vous d'avoir les permissions dans le dossier de destination
+4. **Navigateur introuvable** : Si vous voyez l'erreur "Browser was not found at the configured executablePath" :
+   - Par défaut, Puppeteer télécharge automatiquement Chromium lors du premier `pnpm install`
+   - Si le téléchargement a échoué, réinstallez : `rm -rf node_modules && pnpm install`
+   - Ou utilisez un navigateur système avec `-ep` : `pnpm screenshot URL -ep /usr/bin/chromium-browser`
 
 ### Dépannage de l'installation globale
 
