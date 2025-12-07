@@ -24,7 +24,7 @@ export function normalizeUrl(url) {
   try {
     new URL(normalizedUrl);
   } catch (error) {
-    throw new Error(`URL mal formée : ${url}`);
+    throw new Error(`URL mal formée : ${url} (${error.message})`);
   }
 
   return normalizedUrl;
