@@ -13,6 +13,14 @@ Un outil simple permettant de capturer automatiquement des captures d'écran de 
 pnpm install
 ```
 
+3. Installez Chromium pour Puppeteer (si nécessaire)
+
+```bash
+pnpm dlx puppeteer browsers install chrome
+```
+
+**Note :** Si cette commande échoue ou si vous préférez utiliser votre navigateur système (Chrome, Chromium, Brave), vous pouvez ignorer cette étape et utiliser l'option `--executable-path` lors de l'utilisation de l'outil.
+
 ### Installation globale
 
 Pour utiliser l'outil partout dans votre système sans préfixe `pnpm` :
@@ -349,10 +357,10 @@ Si vous rencontrez des erreurs, assurez-vous que:
 1. **Puppeteer est correctement installé** : Exécutez `pnpm install` dans le répertoire du projet
 2. **L'URL est valide et accessible** : Vérifiez que le site est joignable depuis votre navigateur
 3. **Droits d'écriture** : Assurez-vous d'avoir les permissions dans le dossier de destination
-4. **Navigateur introuvable** : Si vous voyez l'erreur "Browser was not found at the configured executablePath" :
-   - Par défaut, Puppeteer télécharge automatiquement Chromium lors du premier `pnpm install`
-   - Si le téléchargement a échoué, réinstallez : `rm -rf node_modules && pnpm install`
+4. **Navigateur introuvable** : Si vous voyez l'erreur "Could not find Chrome" ou "Browser was not found" :
+   - Installez manuellement Chromium : `pnpm dlx puppeteer browsers install chrome`
    - Ou utilisez un navigateur système avec `-ep` : `pnpm screenshot URL -ep /usr/bin/chromium-browser`
+   - Pour trouver votre navigateur : `which chromium-browser` ou `which brave-browser`
 
 ### Dépannage de l'installation globale
 
