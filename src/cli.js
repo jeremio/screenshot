@@ -22,6 +22,15 @@ function validatePositiveNumber(value, name) {
   return num;
 }
 
+function validateNonNegativeNumber(value, name) {
+  const num = parseInt(value, 10);
+  if (isNaN(num) || num < 0) {
+    console.error(`Erreur: ${name} doit être un nombre positif ou nul.`);
+    process.exit(1);
+  }
+  return num;
+}
+
 function validateQuality(value) {
   const num = parseInt(value, 10);
   if (isNaN(num) || num < 1 || num > 100) {
@@ -74,13 +83,13 @@ function validateWaitUntil(value) {
 const ARG_OPTIONS = [
   { names: ['--output', '-o'], key: 'outputDir', takesValue: true },
   { names: ['--format', '-f'], key: 'format', takesValue: true, validator: validateFormat },
-  { names: ['--delay', '-d'], key: 'delay', takesValue: true, validator: (val) => validatePositiveNumber(val, 'Le délai') },
+  { names: ['--delay', '-d'], key: 'delay', takesValue: true, validator: (val) => validateNonNegativeNumber(val, 'Le délai') },
   { names: ['--quality', '-q'], key: 'quality', takesValue: true, validator: validateQuality },
   { names: ['--width', '-w'], key: 'width', takesValue: true, validator: (val) => validatePositiveNumber(val, 'La largeur') },
   { names: ['--height', '-h'], key: 'height', takesValue: true, validator: (val) => validatePositiveNumber(val, 'La hauteur') },
   { names: ['--full-page', '-fp'], key: 'fullPage', takesValue: true, validator: (val) => validateBoolean(val, '--full-page') },
   { names: ['--executable-path', '-ep'], key: 'executablePath', takesValue: true, validator: (val) => validatePath(val, '--executable-path') },
-  { names: ['--timeout', '-t'], key: 'timeout', takesValue: true, validator: (val) => validatePositiveNumber(val, 'Le timeout') },
+  { names: ['--timeout', '-t'], key: 'timeout', takesValue: true, validator: (val) => validateNonNegativeNumber(val, 'Le timeout') },
   { names: ['--wait-until', '-wu'], key: 'waitUntil', takesValue: true, validator: validateWaitUntil },
   { names: ['--help'], action: () => { showHelp(); process.exit(0); } },
 ];
