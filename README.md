@@ -54,13 +54,17 @@ screenshot [url] [options]
 - `--format`, `-f [format]` : Format d'image - png, jpeg ou webp (par défaut: `png`)
 - `--delay`, `-d [ms]` : Délai en millisecondes avant la capture (par défaut: `0`)
 - `--quality`, `-q [1-100]` : Qualité pour jpeg/webp de 1 à 100 (par défaut: `85`)
-- `--width`, `-w [pixels]` : Largeur de la fenêtre en pixels (par défaut: `1920`)
-- `--height`, `-h [pixels]` : Hauteur de la fenêtre en pixels (par défaut: `1080`)
+- `--width`, `-w [pixels]` : Largeur de la fenêtre en pixels (par défaut: `1920`, maximum: `16384`)
+- `--height`, `-H [pixels]` : Hauteur de la fenêtre en pixels (par défaut: `1080`, maximum: `16384`)
 - `--full-page`, `-fp [bool]` : Capturer la page entière ou seulement la partie visible. Valeurs acceptées: `true`, `false`, `1`, `0` (par défaut: `true`)
 - `--executable-path`, `-ep [path]` : Chemin vers l'exécutable du navigateur (par défaut: utilise le Chromium intégré à Puppeteer)
 - `--timeout`, `-t [ms]` : Timeout de navigation en millisecondes (par défaut: `30000`)
 - `--wait-until`, `-wu [option]` : Condition d'attente - load, domcontentloaded, networkidle0, networkidle2 (par défaut: `networkidle2`)
-- `--help` : Afficher cette aide
+- `--no-sandbox` : Désactiver le bac à sable Chromium (voir [Sécurité](#sécurité))
+- `--help`, `-h` : Afficher cette aide
+
+> **Changement incompatible** : `-h` désigne désormais l'aide, conformément à
+> la convention universelle. La hauteur s'abrège en `-H` (majuscule).
 
 ### Exemples
 
@@ -158,12 +162,12 @@ screenshot https://example.com -d 2000
 
 ```bash
 # Version locale
-pnpm screenshot https://example.com -w 375 -h 667
+pnpm screenshot https://example.com -w 375 -H 667
 ```
 
 ```bash
 # Version globale
-screenshot https://example.com -w 375 -h 667
+screenshot https://example.com -w 375 -H 667
 ```
 *Capture d'écran simulant un appareil mobile (iPhone 8)*
 
@@ -171,12 +175,12 @@ screenshot https://example.com -w 375 -h 667
 
 ```bash
 # Version locale
-pnpm screenshot https://example.com -w 768 -h 1024 -fp false
+pnpm screenshot https://example.com -w 768 -H 1024 -fp false
 ```
 
 ```bash
 # Version globale
-screenshot https://example.com -w 768 -h 1024 -fp false
+screenshot https://example.com -w 768 -H 1024 -fp false
 ```
 *Capture d'écran simulant une tablette, uniquement ce qui est visible à l'écran*
 
@@ -184,12 +188,12 @@ screenshot https://example.com -w 768 -h 1024 -fp false
 
 ```bash
 # Version locale
-pnpm screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -h 768
+pnpm screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -H 768
 ```
 
 ```bash
 # Version globale
-screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -h 768
+screenshot https://example.com -o ./captures -f webp -q 90 -d 1500 -w 1024 -H 768
 ```
 *Capture au format WebP, qualité 90%, après un délai de 1,5 seconde, en résolution 1024x768, dans le dossier ./captures/*
 
@@ -255,13 +259,13 @@ pnpm unlink --global
 
 | Appareil         | Largeur | Hauteur | Commande                                       |
 |------------------|---------|---------|------------------------------------------------|
-| Mobile (petit)   | 320     | 568     | `screenshot URL -w 320 -h 568`                 |
-| Mobile (moyen)   | 375     | 667     | `screenshot URL -w 375 -h 667`                 |
-| Mobile (grand)   | 414     | 896     | `screenshot URL -w 414 -h 896`                 |
-| Tablette         | 768     | 1024    | `screenshot URL -w 768 -h 1024`                |
-| Laptop           | 1366    | 768     | `screenshot URL -w 1366 -h 768`                |
-| Desktop          | 1920    | 1080    | `screenshot URL -w 1920 -h 1080`               |
-| 4K               | 3840    | 2160    | `screenshot URL -w 3840 -h 2160`               |
+| Mobile (petit)   | 320     | 568     | `screenshot URL -w 320 -H 568`                 |
+| Mobile (moyen)   | 375     | 667     | `screenshot URL -w 375 -H 667`                 |
+| Mobile (grand)   | 414     | 896     | `screenshot URL -w 414 -H 896`                 |
+| Tablette         | 768     | 1024    | `screenshot URL -w 768 -H 1024`                |
+| Laptop           | 1366    | 768     | `screenshot URL -w 1366 -H 768`                |
+| Desktop          | 1920    | 1080    | `screenshot URL -w 1920 -H 1080`               |
+| 4K               | 3840    | 2160    | `screenshot URL -w 3840 -H 2160`               |
 
 ## Formats d'image supportés
 
@@ -392,13 +396,62 @@ Si la commande globale ne fonctionne pas :
    pnpm link --global
    ```
 
+## Sécurité
+
+### Bac à sable Chromium
+
+Le bac à sable Chromium est **actif par défaut**. C'est la principale barrière
+entre le moteur de rendu et votre machine : cet outil visitant par nature des
+URL arbitraires, une faille du moteur déclenchée par une page hostile
+s'exécuterait sinon avec tous vos droits d'utilisateur.
+
+L'option `--no-sandbox` (ou la variable d'environnement
+`SCREENSHOT_NO_SANDBOX=1`) le désactive, avec un avertissement. Ne l'utilisez
+que dans un environnement déjà isolé : conteneur, CI/CD.
+
+Si le lancement échoue avec une erreur de bac à sable sous Linux, la bonne
+solution est d'activer les namespaces utilisateur non privilégiés plutôt que de
+retirer la protection :
+
+```bash
+sudo sysctl -w kernel.unprivileged_userns_clone=1
+```
+
+### Protocoles acceptés
+
+Seuls `http:` et `https:` sont autorisés. Tout autre schéma (`file:`,
+`javascript:`, `data:`, `chrome:`, `ftp:`, `view-source:`...) est rejeté avant
+tout lancement du navigateur. Une entrée sans schéma, comme `example.com` ou
+`localhost:8080`, reçoit le préfixe `https://`.
+
+### Limite connue
+
+Aucun filtrage des adresses internes n'est appliqué : `localhost`, les plages
+privées et les adresses de métadonnées cloud (`169.254.169.254`) restent
+joignables. C'est sans conséquence en usage local, mais ce filtrage devra
+précéder toute fonctionnalité alimentant les URL depuis une source externe
+(`--batch`, `--webhook`, `--schedule` de la roadmap).
+
+## Développement
+
+```bash
+pnpm test         # Lancer les tests (Vitest)
+pnpm test:watch   # Tests en mode surveillance
+pnpm lint         # Vérifier le style (ESLint)
+```
+
+Les tests couvrent la validation des URL (`src/utils.test.js`) et l'analyse des
+arguments (`src/cli.test.js`). La capture elle-même n'est pas testée
+automatiquement : elle nécessite un vrai navigateur.
+
 ## Configuration technique
 
 - Node.js avec modules ES
 - Puppeteer pour l'automatisation du navigateur Chrome
-- Résolution par défaut: 1920x1080
+- Résolution par défaut: 1920x1080 (maximum 16384 px par côté, limite de rendu de Chromium)
 - Qualité JPEG/WebP par défaut: 85%
 - Mode headless (sans interface graphique)
+- Bac à sable Chromium actif par défaut
 
 ## Roadmap
 

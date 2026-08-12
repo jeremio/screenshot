@@ -26,7 +26,7 @@ export async function takeScreenshot(
   try {
     currentUrl = normalizeUrl(url);
   } catch (error) {
-    throw new Error(`Validation URL échouée: ${error.message}`);
+    throw new Error(`Validation URL échouée: ${error.message}`, { cause: error });
   }
 
   console.log(`Prise de capture d'écran de: ${currentUrl}`);
@@ -92,9 +92,9 @@ export async function takeScreenshot(
       });
     } catch (navError) {
       if (navError.name === 'TimeoutError') {
-        throw new Error(`Timeout dépassé (${timeout}ms) lors du chargement de ${currentUrl}`);
+        throw new Error(`Timeout dépassé (${timeout}ms) lors du chargement de ${currentUrl}`, { cause: navError });
       }
-      throw new Error(`Erreur de navigation vers ${currentUrl}: ${navError.message}`);
+      throw new Error(`Erreur de navigation vers ${currentUrl}: ${navError.message}`, { cause: navError });
     }
 
     if (delay > 0) {
@@ -119,7 +119,7 @@ export async function takeScreenshot(
     console.log(`Capture d'écran enregistrée: ${filePath}`);
     return filePath;
   } catch (error) {
-    throw new Error(`Erreur lors de la capture d'écran pour ${currentUrl}: ${error.message}`);
+    throw new Error(`Erreur lors de la capture d'écran pour ${currentUrl}: ${error.message}`, { cause: error });
   } finally {
     if (browser) {
       await browser.close();

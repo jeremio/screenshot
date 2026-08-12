@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 *.png
+
+# Instructions locales pour Claude Code
+CLAUDE.md
