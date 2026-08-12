@@ -4,7 +4,7 @@ import { parseArgs, showHelp } from './cli.js';
 import { takeScreenshot } from './capture.js';
 
 async function main() {
-  const { url, outputDir, format, delay, quality, width, height, fullPage, executablePath, timeout, waitUntil } = parseArgs();
+  const { url, ...options } = parseArgs();
 
   if (!url) {
     console.error('Erreur (main.js): URL manquante. Veuillez fournir une URL valide.');
@@ -13,22 +13,7 @@ async function main() {
   }
 
   try {
-    const options = {
-      outputDir,
-      format,
-      delay,
-      quality,
-      width,
-      height,
-      fullPage,
-      executablePath,
-      timeout,
-      waitUntil,
-    };
-    const filePath = await takeScreenshot(
-      url,
-      options,
-    );
+    const filePath = await takeScreenshot(url, options);
     // Ajouter un log final utilisant filePath
     console.log(`(main.js) Opération terminée avec succès. Fichier enregistré à : ${filePath}`);
   } catch (error) {

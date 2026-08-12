@@ -1,30 +1,35 @@
+// Seuls ces protocoles sont autorisés (liste blanche : tout le reste est rejeté).
+const ALLOWED_PROTOCOLS = ['http:', 'https:'];
+
 /**
  * Normalise une URL pour s'assurer qu'elle commence par http:// ou https://.
  * @param {string} url L'URL à normaliser.
  * @returns {string} L'URL normalisée.
- * @throws {Error} Si l'URL est invalide ou utilise un protocole non sécurisé.
+ * @throws {Error} Si l'URL est invalide ou utilise un protocole non autorisé.
  */
 export function normalizeUrl(url) {
   if (!url || typeof url !== 'string') {
     throw new Error('URL invalide : doit être une chaîne non vide');
   }
 
-  // Vérifier les protocoles dangereux
-  const dangerousProtocols = ['file://', 'javascript:', 'data:'];
-  if (dangerousProtocols.some(proto => url.toLowerCase().startsWith(proto))) {
-    throw new Error(`Protocole non autorisé détecté dans l'URL`);
-  }
+  const trimmedUrl = url.trim();
 
-  let normalizedUrl = url;
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    normalizedUrl = 'https://' + url;
-  }
+  // N'ajouter le préfixe que si l'entrée ne déclare aucun schéma. Une entrée
+  // comme "chrome://settings" doit être analysée telle quelle puis rejetée par
+  // la liste blanche, et non maquillée en "https://chrome://settings".
+  const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmedUrl);
+  const normalizedUrl = hasScheme ? trimmedUrl : 'https://' + trimmedUrl;
 
   // Valider que l'URL est bien formée
+  let parsedUrl;
   try {
-    new URL(normalizedUrl);
+    parsedUrl = new URL(normalizedUrl);
   } catch (error) {
     throw new Error(`URL mal formée : ${url} (${error.message})`);
+  }
+
+  if (!ALLOWED_PROTOCOLS.includes(parsedUrl.protocol)) {
+    throw new Error(`Protocole non autorisé : "${parsedUrl.protocol}". Seuls http: et https: sont acceptés.`);
   }
 
   return normalizedUrl;

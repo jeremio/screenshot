@@ -19,6 +19,7 @@ export async function takeScreenshot(
     executablePath = DEFAULT_CONFIG.executablePath,
     timeout = DEFAULT_CONFIG.timeout,
     waitUntil = DEFAULT_CONFIG.waitUntil,
+    noSandbox = DEFAULT_CONFIG.noSandbox,
   } = options;
 
   let currentUrl;
@@ -60,11 +61,16 @@ export async function takeScreenshot(
   try {
     const launchOptions = {
       headless: true,
-      // AVERTISSEMENT: Ces flags désactivent certaines protections de sécurité.
-      // Utilisez-les uniquement dans des environnements de confiance (conteneurs, CI/CD).
-      // Pour un usage en production, configurez un environnement avec les permissions appropriées.
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: [],
     };
+
+    // Le bac à sable Chromium n'est désactivé que sur demande explicite. Sans
+    // lui, une faille du moteur de rendu déclenchée par une page hostile
+    // s'exécute avec tous les droits de l'utilisateur courant.
+    if (noSandbox) {
+      launchOptions.args.push('--no-sandbox', '--disable-setuid-sandbox');
+      console.warn('AVERTISSEMENT: bac à sable Chromium désactivé. À réserver aux environnements isolés (conteneur, CI/CD).');
+    }
 
     // N'ajouter executablePath que s'il est défini
     if (executablePath) {

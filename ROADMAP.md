@@ -1,12 +1,11 @@
 # Roadmap - Fonctionnalités futures
 
-Ce document présente les idées de fonctionnalités pour les futures versions de l'outil de capture d'écran.
+Ce document présente les idées de fonctionnalités pour les futures versions de l'outil de capture d'écran. Les options déjà implémentées sont listées dans le README, pas ici.
 
 ## Navigation et Interaction
 
 ### Options de navigation
 - `--wait-for <selector>` - Attendre qu'un élément spécifique apparaisse avant la capture
-- `--timeout <ms>` - Délai maximum d'attente avant échec (défaut: 30000)
 - `--user-agent <string>` - Définir un User-Agent personnalisé pour simuler un navigateur spécifique
 
 ### Options d'interaction
@@ -47,6 +46,8 @@ Ce document présente les idées de fonctionnalités pour les futures versions d
 - `--session <file.json>` - Charger une session stockée pour l'authentification
 
 ### Sécurité
+> Prérequis : les fonctionnalités qui font venir les URL d'une source externe (`--batch`, `--webhook`, `--schedule`) transforment l'outil en vecteur SSRF. Elles nécessitent au préalable un filtrage des adresses internes (localhost, plages privées, 169.254.169.254), appliqué aussi aux redirections suivies par `page.goto`.
+
 - `--proxy <url>` - Utiliser un proxy pour les requêtes
 - `--headful` - Mode visible (non-headless) pour contourner certaines détections de bots
 - `--incognito` - Utiliser un contexte de navigation privée

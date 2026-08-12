@@ -10,31 +10,46 @@ export const DEFAULT_CONFIG = {
   executablePath: undefined, // Laisser Puppeteer utiliser son Chromium intégré
   timeout: 30000,
   waitUntil: 'networkidle2',
+  // Le bac à sable Chromium reste actif par défaut : le désactiver expose la
+  // machine hôte en cas de faille du moteur de rendu sur une page hostile.
+  noSandbox: process.env.SCREENSHOT_NO_SANDBOX === '1',
 };
+
+/**
+ * Convertit une chaîne en entier de façon stricte.
+ * Contrairement à parseInt, rejette les valeurs partiellement numériques
+ * ("50xyz") et les décimaux ("3.9") au lieu de les tronquer silencieusement.
+ * @returns {number} L'entier analysé, ou NaN si la valeur n'est pas un entier.
+ */
+function parseStrictInteger(value) {
+  if (typeof value !== 'string' || value.trim() === '') return NaN;
+  const num = Number(value);
+  return Number.isInteger(num) ? num : NaN;
+}
 
 // Fonctions de validation
 function validatePositiveNumber(value, name) {
-  const num = parseInt(value, 10);
+  const num = parseStrictInteger(value);
   if (isNaN(num) || num <= 0) {
-    console.error(`Erreur: ${name} doit être un nombre positif.`);
+    console.error(`Erreur: ${name} doit être un nombre entier positif. Reçu: "${value}"`);
     process.exit(1);
   }
   return num;
 }
 
 function validateNonNegativeNumber(value, name) {
-  const num = parseInt(value, 10);
+  const num = parseStrictInteger(value);
   if (isNaN(num) || num < 0) {
-    console.error(`Erreur: ${name} doit être un nombre positif ou nul.`);
+    console.error(`Erreur: ${name} doit être un nombre entier positif ou nul. Reçu: "${value}"`);
     process.exit(1);
   }
   return num;
 }
 
 function validateQuality(value) {
-  const num = parseInt(value, 10);
+  const num = parseStrictInteger(value);
   if (isNaN(num) || num < 1 || num > 100) {
-    console.error('Erreur: La qualité doit être un nombre entre 1 et 100.');
+    console.error(`Erreur: La qualité doit être un nombre entier entre 1 et 100. Reçu: "${value}"`);
     process.exit(1);
   }
   return num;
@@ -91,6 +106,7 @@ const ARG_OPTIONS = [
   { names: ['--executable-path', '-ep'], key: 'executablePath', takesValue: true, validator: (val) => validatePath(val, '--executable-path') },
   { names: ['--timeout', '-t'], key: 'timeout', takesValue: true, validator: (val) => validateNonNegativeNumber(val, 'Le timeout') },
   { names: ['--wait-until', '-wu'], key: 'waitUntil', takesValue: true, validator: validateWaitUntil },
+  { names: ['--no-sandbox'], key: 'noSandbox', takesValue: false, value: true },
   { names: ['--help'], action: () => { showHelp(); process.exit(0); } },
 ];
 
@@ -106,6 +122,9 @@ export function parseArgs() {
     if (optionConfig) {
       if (optionConfig.action) {
         optionConfig.action();
+      } else if (optionConfig.takesValue === false) {
+        // Option booléenne sans valeur (ex: --no-sandbox)
+        parsedArgs[optionConfig.key] = optionConfig.value;
       } else if (optionConfig.takesValue) {
         if (i + 1 < args.length && !args[i+1].startsWith('-')) {
           i++;
@@ -148,10 +167,21 @@ Options:
   --width, -w [pixels]           Largeur de la fenêtre en pixels (par défaut: 1920)
   --height, -h [pixels]          Hauteur de la fenêtre en pixels (par défaut: 1080)
   --full-page, -fp [bool]        Capturer la page entière (par défaut: true). Valeurs acceptées: true, false, 1, 0.
-  --executable-path, -ep [path]  Chemin vers l'exécutable du navigateur (par défaut: ${DEFAULT_CONFIG.executablePath})
+  --executable-path, -ep [path]  Chemin vers l'exécutable du navigateur (par défaut: Chromium intégré à Puppeteer)
   --timeout, -t [ms]             Timeout de navigation en millisecondes (par défaut: 30000)
   --wait-until, -wu [option]     Condition d'attente: load, domcontentloaded, networkidle0, networkidle2 (par défaut: networkidle2)
+  --no-sandbox                   Désactiver le bac à sable Chromium (DANGEREUX, voir ci-dessous)
   --help                         Afficher cette aide
+
+Sécurité:
+  Le bac à sable Chromium est actif par défaut. Il constitue la principale
+  barrière entre le moteur de rendu et votre machine lors de la visite d'une
+  page potentiellement hostile. Ne le désactivez (--no-sandbox, ou la variable
+  d'environnement SCREENSHOT_NO_SANDBOX=1) que dans un environnement déjà isolé
+  : conteneur, CI/CD. Si le lancement échoue avec une erreur de sandbox sous
+  Linux, la bonne solution est d'activer les namespaces utilisateur non
+  privilégiés plutôt que de désactiver la protection :
+    sudo sysctl -w kernel.unprivileged_userns_clone=1
 
 Exemples:
   pnpm screenshot https://example.com
@@ -160,5 +190,6 @@ Exemples:
   pnpm screenshot https://example.com -d 2000 -w 375 -h 667 -f webp
   pnpm screenshot https://example.com -ep /opt/mybrowser/chrome
   pnpm screenshot https://example.com -t 60000 -wu load
+  pnpm screenshot https://example.com --no-sandbox
   `);
 }
