@@ -10,7 +10,7 @@ export const DEFAULT_CONFIG = {
   quality: 85,
   delay: 0,
   fullPage: true,
-  executablePath: undefined, // Laisser Puppeteer utiliser son Chromium intégré
+  executablePath: undefined, // Par defaut : Google Chrome installe sur le systeme
   timeout: 30000,
   waitUntil: 'networkidle2',
   // Le bac à sable Chromium reste actif par défaut : le désactiver expose la

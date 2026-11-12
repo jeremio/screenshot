@@ -13,13 +13,7 @@ Un outil simple permettant de capturer automatiquement des captures d'écran de 
 pnpm install
 ```
 
-3. Installez Chromium pour Puppeteer (si nécessaire)
-
-```bash
-pnpm dlx puppeteer browsers install chrome
-```
-
-**Note :** Si cette commande échoue ou si vous préférez utiliser votre navigateur système (Chrome, Chromium, Brave), vous pouvez ignorer cette étape et utiliser l'option `--executable-path` lors de l'utilisation de l'outil.
+3. Vérifiez que Google Chrome est installé : l'outil utilise `puppeteer-core`, qui ne télécharge pas de navigateur et pilote par défaut le Chrome du système. Pour un autre navigateur (Chromium, Brave), utilisez l'option `--executable-path`.
 
 ### Installation globale
 
@@ -57,7 +51,7 @@ screenshot [url] [options]
 - `--width`, `-w [pixels]` : Largeur de la fenêtre en pixels (par défaut: `1920`, maximum: `16384`)
 - `--height`, `-H [pixels]` : Hauteur de la fenêtre en pixels (par défaut: `1080`, maximum: `16384`)
 - `--full-page`, `-fp [bool]` : Capturer la page entière ou seulement la partie visible. Valeurs acceptées: `true`, `false`, `1`, `0` (par défaut: `true`)
-- `--executable-path`, `-ep [path]` : Chemin vers l'exécutable du navigateur (par défaut: utilise le Chromium intégré à Puppeteer)
+- `--executable-path`, `-ep [path]` : Chemin vers l'exécutable du navigateur (par défaut : le Google Chrome installé sur le système)
 - `--timeout`, `-t [ms]` : Timeout de navigation en millisecondes (par défaut: `30000`)
 - `--wait-until`, `-wu [option]` : Condition d'attente - load, domcontentloaded, networkidle0, networkidle2 (par défaut: `networkidle2`)
 - `--no-sandbox` : Désactiver le bac à sable Chromium (voir [Sécurité](#sécurité))
@@ -308,12 +302,11 @@ Utile pour :
 - WebP : pour un bon compromis entre qualité et taille
 
 ### Chemin de l'exécutable du navigateur
-Par défaut, Puppeteer utilise son propre Chromium intégré (téléchargé automatiquement lors de l'installation).
+Par défaut, l'outil pilote le Google Chrome installé sur le système (`puppeteer-core`, sans navigateur téléchargé).
 
 L'option `--executable-path` permet de spécifier un navigateur différent. Utile si :
 - Vous voulez utiliser votre installation système de Chrome/Chromium/Brave
 - Vous avez besoin d'une version spécifique du navigateur
-- Puppeteer ne peut pas télécharger Chromium (restrictions réseau, pare-feu)
 - Vous avez une installation portable du navigateur
 
 **Chemins communs sur Linux :**

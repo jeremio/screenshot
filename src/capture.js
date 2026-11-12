@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
 import path from 'path';
 import fs from 'fs';
 import { DEFAULT_CONFIG } from './cli.js';
@@ -77,7 +77,9 @@ export async function takeScreenshot(
       launchOptions.executablePath = executablePath;
       console.log(`Utilisation de l'exécutable du navigateur : ${executablePath}`);
     } else {
-      console.log('Utilisation du Chromium intégré à Puppeteer');
+      // puppeteer-core ne telecharge pas de navigateur : on prend le Chrome installe sur le systeme
+      launchOptions.channel = 'chrome';
+      console.log('Utilisation de Google Chrome installé sur le système');
     }
 
     browser = await puppeteer.launch(launchOptions);
